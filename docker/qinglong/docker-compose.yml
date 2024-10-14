@@ -1,15 +1,27 @@
-version: '2'
+# 使用版本 3.8，以获得更多功能和更好的兼容性
+version: '3.8' 
+
 services:
   web:
-    # alpine 基础镜像版本
+    # 使用基于 Alpine 的 Qinglong 镜像版本
     image: whyour/qinglong:2.17.4
-    # debian-slim 基础镜像版本
-    # image: whyour/qinglong:debian  
+
+    # 可选择使用基于 Debian 的镜像版本
+    # image: whyour/qinglong:debian-slim 
+
+    # 持久化数据的卷映射
     volumes:
-      - ./data:/ql/data
+      # 将主机的 ./data 目录挂载到容器的 /ql/data
+      - ./data:/ql/data  
+
+    # 端口映射，确保外部可访问容器的服务
     ports:
-      - "0.0.0.0:5700:5700"
+      # 将主机的 5700 端口映射到容器的 5700 端口
+      - "5700:5700"  
+
     environment:
-      # 部署路径非必须，以斜杠开头和结尾，比如 /test/
-      QlBaseUrl: '/'
-    restart: unless-stopped
+      # 部署路径，非必须，以斜杠开头和结尾
+      QlBaseUrl: '/'  
+
+    # 重启策略：除非手动停止，否则自动重启容器
+    restart: unless-stopped  
