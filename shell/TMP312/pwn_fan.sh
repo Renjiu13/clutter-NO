@@ -27,7 +27,8 @@ busybox usleep $rands
     pidof $myname >/var/run/${myname}.pid || pgrep $myname >/var/run/${myname}.pid
 
     # 定义 GPIO 引脚号，可能用于控制风扇
-    ii=152 # 在 tpm312 板子的 minipci 旁边的 4pin 座 (J8917)
+    # 在 tpm312 板子的 minipci 旁边的 4pin 座 (J8917)
+    ii=152 
     
     # 导出 GPIO 引脚
     echo $ii >/sys/class/gpio/export
@@ -112,4 +113,5 @@ busybox usleep $rands
                 ;;
         esac
     done
-} >/dev/null 2>&1 & # 将脚本的所有输出重定向到 /dev/null
+} >/dev/null 2>&1 & 
+# 将脚本的所有输出重定向到 /dev/null
