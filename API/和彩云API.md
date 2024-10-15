@@ -1,3 +1,11 @@
+#  彩云天气API 获取实时及当日天气等内容
+
+转载[吾爱破解]https://www.52pojie.cn/thread-1972591-1-1.html
+
+
+
+
+```
 import requests
  # 用户输入的秘钥和经纬度（以逗号分隔）
 api_key = ""  # 这里输入用户自己的秘钥
@@ -100,3 +108,4 @@ if __name__ == "__main__":
         print("公司总部天气信息：\n",weather_result)
     else:
         print("未能提取到天气信息。")
+```
