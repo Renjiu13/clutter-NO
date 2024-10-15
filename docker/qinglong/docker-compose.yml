@@ -1,27 +1,25 @@
-# 使用版本 3.8，以获得更多功能和更好的兼容性
+# Docker Compose 文件版本设置为 3.8，以利用更多高级特性和更好的兼容性。
 version: '3.8' 
 
 services:
   web:
-    # 使用基于 Alpine 的 Qinglong 镜像版本
+    # 使用基于 Alpine Linux 的 Qinglong 镜像版本 2.17.4。
     image: whyour/qinglong:2.17.4
 
-    # 可选择使用基于 Debian 的镜像版本
+    # 注释掉的行提供了使用基于 Debian 的 slim 版本的选项。
     # image: whyour/qinglong:debian-slim 
 
-    # 持久化数据的卷映射
+    # 定义持久化存储卷映射，将本地目录 ./data 与容器内的 /ql/data 路径绑定。
     volumes:
-      # 将主机的 ./data 目录挂载到容器的 /ql/data
       - ./data:/ql/data  
 
-    # 端口映射，确保外部可访问容器的服务
+    # 映射端口，允许外部通过主机的 5700 端口访问容器内部服务。
     ports:
-      # 将主机的 5700 端口映射到容器的 5700 端口
       - "5700:5700"  
 
+    # 设置环境变量，定义 Qinglong 的部署基础路径，默认为根路径。
     environment:
-      # 部署路径，非必须，以斜杠开头和结尾
       QlBaseUrl: '/'  
 
-    # 重启策略：除非手动停止，否则自动重启容器
+    # 设置容器重启策略为 `unless-stopped`，即除非手动停止容器，否则容器将在遇到任何退出状态后自动重启。
     restart: unless-stopped  
