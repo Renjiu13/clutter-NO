@@ -2,7 +2,7 @@
 
 转载[吾爱破解](https://www.52pojie.cn/thread-1972591-1-1.html)
 
-！[图片示例]（https://attach.52pojie.cn/forum/202410/15/120347wr1ubir8pa7p4snu.png）
+！[图片示例](https://attach.52pojie.cn/forum/202410/15/120347wr1ubir8pa7p4snu.png)
 
 
 ```
