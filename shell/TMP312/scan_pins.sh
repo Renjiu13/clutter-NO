@@ -1,7 +1,5 @@
 #!/bin/bash
 
-# 此脚本目的为扫描网口GPIO针脚
-
 # 获取脚本所在目录
 SCRIPT_DIR="$(dirname "$(realpath "$0")")"
 
@@ -25,10 +23,34 @@ check_ssh_connection() {
     fi
 }
 
+# 函数：尝试恢复网络连接
+recover_network() {
+    log "尝试恢复网络连接"
+    
+    # 重启网络服务
+    sudo systemctl restart networking
+    log "重启网络服务"
+    
+    # 获取当前活动的网络接口
+    active_interface=$(ip route | grep default | awk '{print $5}')
+    if [ -n "$active_interface" ]; then
+        # 重启网络接口
+        sudo ip link set dev $active_interface down
+        sudo ip link set dev $active_interface up
+        log "重启网络接口 $active_interface"
+    else
+        log "未找到活动的网络接口"
+    fi
+    
+    # 等待几秒钟让网络稳定
+    sleep 10
+}
+
 # 函数：尝试重新建立SSH连接
 reconnect_ssh() {
     log "尝试重新建立SSH连接"
     while ! check_ssh_connection; do
+        recover_network
         sleep 5  # 等待5秒后重试
         log "再次尝试连接SSH"
     done
@@ -65,6 +87,9 @@ do
         echo $original_value >/sys/class/gpio/gpio$ii/value
         log "恢复GPIO引脚: $ii 的原始状态: $original_value"
         
+        # 尝试恢复网络连接
+        recover_network
+        
         # 尝试重新建立SSH连接
         reconnect_ssh
         
@@ -72,9 +97,9 @@ do
         net_gpio_pins=$(grep "检测到SSH连接中断" "$LOG_FILE" | awk '{print $10}')
         log "检测到网络接口使用的GPIO引脚: $net_gpio_pins"
         
-        # 结束脚本
-        log "脚本结束"
-        exit 1
+        # 重启设备
+        log "重启设备以恢复网络连接"
+        sudo reboot
     fi
     
     # 设置为高电平
@@ -90,6 +115,9 @@ do
         echo $original_value >/sys/class/gpio/gpio$ii/value
         log "恢复GPIO引脚: $ii 的原始状态: $original_value"
         
+        # 尝试恢复网络连接
+        recover_network
+        
         # 尝试重新建立SSH连接
         reconnect_ssh
         
@@ -97,9 +125,9 @@ do
         net_gpio_pins=$(grep "检测到SSH连接中断" "$LOG_FILE" | awk '{print $10}')
         log "检测到网络接口使用的GPIO引脚: $net_gpio_pins"
         
-        # 结束脚本
-        log "脚本结束"
-        exit 1
+        # 重启设备
+        log "重启设备以恢复网络连接"
+        sudo reboot
     fi
     
     # 恢复原始状态
