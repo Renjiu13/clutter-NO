@@ -34,9 +34,11 @@ recover_network() {
 
     active_interface=$(ip route | grep default | awk '{print $5}')
     if [ -n "$active_interface" ]; then
-        sudo ip link set dev "$active_interface" down
-        sudo ip link set dev "$active_interface" up
-        log "重启网络接口 $active_interface"
+        if ! sudo ip link set dev "$active_interface" down || ! sudo ip link set dev "$active_interface" up; then
+            log "重启网络接口 $active_interface 失败"
+        else
+            log "重启网络接口 $active_interface 成功"
+        fi
     else
         log "未找到活动的网络接口"
     fi
@@ -62,21 +64,33 @@ net_gpio_pins=""
 for ii in $(seq "$START_PIN" "$END_PIN")
 do
     log "开始测试GPIO引脚: $ii"
-    echo "$ii" >/sys/class/gpio/export
-    echo out >/sys/class/gpio/gpio"$ii"/direction
+    if ! echo "$ii" >/sys/class/gpio/export; then
+        log "导出GPIO引脚: $ii 失败"
+        continue
+    fi
+    if ! echo out >/sys/class/gpio/gpio"$ii"/direction; then
+        log "设置GPIO引脚: $ii 为输出模式失败"
+        continue
+    fi
     
     original_value=$(cat /sys/class/gpio/gpio"$ii"/value)
     log "记录GPIO引脚: $ii 的原始状态: $original_value"
 
     for value in 0 1; do
-        echo "$value" >/sys/class/gpio/gpio"$ii"/value
+        if ! echo "$value" >/sys/class/gpio/gpio"$ii"/value; then
+            log "设置GPIO引脚: $ii 为 ${value}电平失败"
+            continue
+        fi
         log "设置GPIO引脚: $ii 为 ${value}电平"
         sleep 1
 
         if ! check_ssh_connection; then
             log "检测到SSH连接中断，当前GPIO引脚: $ii 可能是网络接口使用的引脚"
-            echo "$original_value" >/sys/class/gpio/gpio"$ii"/value
-            log "恢复GPIO引脚: $ii 的原始状态: $original_value"
+            if ! echo "$original_value" >/sys/class/gpio/gpio"$ii"/value; then
+                log "恢复GPIO引脚: $ii 的原始状态失败"
+            else
+                log "恢复GPIO引脚: $ii 的原始状态: $original_value"
+            fi
             
             recover_network
             reconnect_ssh
@@ -88,8 +102,11 @@ do
     done
     
     # 恢复原始状态
-    echo "$original_value" >/sys/class/gpio/gpio"$ii"/value
-    log "恢复GPIO引脚: $ii 的原始状态: $original_value"
+    if ! echo "$original_value" >/sys/class/gpio/gpio"$ii"/value; then
+        log "恢复GPIO引脚: $ii 的原始状态失败"
+    else
+        log "恢复GPIO引脚: $ii 的原始状态: $original_value"
+    fi
     sleep 3
 done
 
