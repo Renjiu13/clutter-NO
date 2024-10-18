@@ -115,6 +115,7 @@ if [ -z "$net_gpio_pins" ]; then
     log "未检测到网络接口使用的GPIO引脚"
 else
     log "检测到网络接口使用的GPIO引脚: $net_gpio_pins"
+    log "扫描到的网口引脚: $net_gpio_pins"  # 添加扫描网口引脚的日志
 fi
 
 # 最后重启设备
