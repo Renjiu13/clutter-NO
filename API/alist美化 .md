@@ -51,7 +51,7 @@ body {
 
 /* 设置背景样式 */
 body {
-    background-image: linear-gradient(to bottom, var(--my-color), var(--my-color)), url(https://api.imlazy.ink/img) !important;
+    background-image: linear-gradient(to bottom, var(--my-color), var(--my-color)), url(https://t.mwm.moe/pc) !important;
     background-repeat: no-repeat !important; /* 背景不重复 */
     background-size: cover !important; /* 背景覆盖整个容器 */
     background-attachment: fixed !important; /* 背景固定 */
