@@ -21,15 +21,13 @@ cat /sys/class/leds/red:pwr_led/brightness
 
 要打开LED，请执行以下命令：
 ```
-echo 1 | sudo tee /sys/class/leds/red:pwr_led/brightness
+echo 0 | sudo tee /sys/class/leds/red:pwr_led/brightness
 ```
 
 要关闭LED，请执行以下命令：
 ```
-echo 0 | sudo tee /sys/class/leds/red:pwr_led/brightness
+echo 1 | sudo tee /sys/class/leds/red:pwr_led/brightness
 ```
-
-
 
 
 
