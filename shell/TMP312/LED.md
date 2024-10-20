@@ -36,7 +36,7 @@ echo 1 | sudo tee /sys/class/leds/red:pwr_led/brightness
 #!/bin/bash
 
 # 定义LED控制路径
-LED_PATH="/sys/class/leds/red:power/brightness"
+LED_PATH="/sys/class/leds/red:pwr_led/brightness"
 
 # 检查文件是否存在
 if [ ! -f "$LED_PATH" ]; then
