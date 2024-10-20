@@ -11,7 +11,6 @@
 灵感枯竭了，想说的也不知该如何表达。等我下次想起来再继续吧......
 
 
-### :stars: Stargazers <a name="stargazers"></a>
+## Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=Renjiu13/clutter-NO&type=Date)](https://star-history.com/#Renjiu13/clutter-NO&Date)
-
+[![Star History Chart](https://api.star-history.com/svg?repos=Renjiu13/clutter-NO&type=Timeline)](https://star-history.com/#Renjiu13/clutter-NO&Timeline)
