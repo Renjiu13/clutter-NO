@@ -35,7 +35,7 @@ echo 1 | sudo tee /sys/class/leds/red:pwr_led/brightness
 
 创建脚本文件
 ```
-sudo nano /usr/local/bin/led
+sudo vim /usr/local/bin/led
 ```
 
 赋予脚本执行权限
