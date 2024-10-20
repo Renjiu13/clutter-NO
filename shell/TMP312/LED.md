@@ -1,3 +1,40 @@
+## 关于TMP312灯光控制脚本教程
+
+在Linux系统中，控制LED灯的开关通常涉及到对 `/sys/class/leds` 目录下的文件进行操作。以下是一个简单的步骤指南，帮助你控制LED灯。
+
+首先，打开终端输入
+
+```
+ls /sys/class/leds/
+```
+可以看到一下内容
+
+```
+root@tpm312:/home/shell# ls /sys/class/leds/
+mmc0::  red:pwr_led
+```
+
+查看LED状态
+```
+cat /sys/class/leds/red:pwr_led/brightness
+```
+
+要打开LED，请执行以下命令：
+```
+echo 1 | sudo tee /sys/class/leds/red:pwr_led/brightness
+```
+
+要关闭LED，请执行以下命令：
+```
+echo 0 | sudo tee /sys/class/leds/red:pwr_led/brightness
+```
+
+
+
+
+
+#### 脚本示例
+```
 #!/bin/bash
 
 # 定义LED控制路径
@@ -63,4 +100,4 @@ while true; do
             ;;
     esac
 done
-
+```
