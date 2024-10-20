@@ -61,7 +61,7 @@ body {
 /* 定义特定类的背景颜色和模糊效果 */
 .hope-c-PJLV-igScBhH-css,
 .hope-c-PJLV-ikSuVsl-css {
-    background-color: rgba(255, 255, 255, 0.3) !important; /* 设置透明度为70% */
+    background-color: rgba(255, 255, 255, 0.1) !important; /* 设置透明度为10% */
     backdrop-filter: blur(10px); /* 背景模糊效果 */
 }
 
