@@ -28,7 +28,10 @@ echo 0 | sudo tee /sys/class/leds/red:pwr_led/brightness
 ```
 echo 1 | sudo tee /sys/class/leds/red:pwr_led/brightness
 ```
-## 全局使用led命令
+
+---
+
+### 全局使用led命令
 
 创建脚本文件
 ```
@@ -48,9 +51,9 @@ ln -s /usr/local/bin/led /home/shell/led
 led
 ```
 
+---
 
-
-#### 脚本示例
+##### 脚本示例
 ```
 #!/bin/bash
 
