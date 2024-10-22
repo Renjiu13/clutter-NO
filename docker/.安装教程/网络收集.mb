@@ -1,0 +1,60 @@
+# Docker 一键安装脚本
+## 支持的系统
+* Debian
+* CentOS
+* Ubuntu
+* Rocky Linux
+* Kali Linux
+* AlmaLinux
+* Red Hat Enterprise Linux
+* OpenCloudOS
+* Fedora
+* openEuler
+
+## 安装脚本
+可以使用以下命令安装 Docker：
+```bash
+bash <(curl -sSL https://linuxmirrors.cn/docker.sh)
+```
+也可以从 GitHub 或 Gitee 下载脚本：
+```bash
+bash <(curl -sSL https://raw.githubusercontent.com/SuperManito/LinuxMirrors/main/DockerInstallation.sh)
+```
+```bash
+bash <(curl -sSL https://gitee.com/SuperManito/LinuxMirrors/raw/main/DockerInstallation.sh)
+```
+## 脚本功能
+脚本集成安装 Docker Engine，可选择安装版本、下载软件源、镜像加速器，支持海内外服务器环境和 arm 架构处理器环境使用。
+
+## Docker CE 软件仓库
+Docker CE 软件仓库，全称 Docker Community Edition (Docker 社区版)，用于下载并安装 Docker 相关软件包。
+
+## Docker Registry 镜像仓库
+Docker Registry 镜像仓库，用于控制下载镜像的默认来源存储仓库，又称镜像加速器，默认为官方的 Docker Hub 仓库。
+
+## 命令选项
+| 名称 | 含义 | 选项值 |
+| --- | --- | --- |
+| --source | 指定 Docker CE 源地址(域名或IP) | 地址 |
+| --source-registry | 指定镜像仓库地址(域名或IP) | 地址 |
+| --codename | 指定 Debian 系操作系统的版本名称 | 版本名 |
+| --install-latested | 控制是否安装最新版本的 Docker Engine | true 或 false |
+| --ignore-backup-tips | 忽略覆盖备份提示（即不覆盖备份） | 无 |
+
+## 软件源格式
+软件源格式为 `<指定WEB协议>://<软件源地址>/<软件源分支>`。
+
+## 服务报错无法启动
+非新装环境可能会在运行脚本后遇到 Docker 服务无法启动的情况，建议重新安装来解决，卸载不会删除镜像和容器数据。
+
+## 卸载命令
+### Debian 系 Linux
+```bash
+apt-get remove -y docker* containerd.io runc && apt-get autoremove
+```
+### RedHat 系 Linux / OpenCloudOS / openEuler
+```bash
+yum install -y yum-utils
+yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+```
+卸载完成后重新执行脚本安装即可。
