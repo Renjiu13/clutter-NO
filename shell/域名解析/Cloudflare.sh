@@ -8,7 +8,7 @@
 #   CF_API_TOKEN: Cloudflare API令牌
 #   CF_DOMAIN: 主域名
 #   CF_SUBDOMAIN: 目标子域名
-CF_API_TOKEN="MQT_Jd4HlZExfWepTMU8GETgsAQ-M5NinXqKf4d"
+CF_API_TOKEN="MQT_Jd4HlZExfWeU8GETgsM5NinKf4d"
 CF_DOMAIN="roe.top"
 CF_SUBDOMAIN="wifi.r.top"
 
