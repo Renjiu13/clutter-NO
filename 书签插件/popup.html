@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>书签同步</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      padding: 20px;
+      color: #333;
+    }
+
+    .menu {
+      width: 200px;
+      margin: 0 auto;
+      background-color: #fff;
+      padding: 15px;
+      border-radius: 5px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    h2 {
+      text-align: center;
+      color: #555;
+      margin-top: 0;
+    }
+
+    ul {
+      list-style-type: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    li {
+      margin-bottom: 10px;
+      cursor: pointer;
+      padding: 8px 12px;
+      border-radius: 3px;
+      transition: background-color 0.3s ease;
+    }
+
+    li:hover {
+      background-color: #f0f0f0;
+    }
+
+  </style>
+</head>
+
+<body>
+  <div class="menu">
+    <h2>书签管理</h2>
+    <ul>
+      <li id="uploadBookmarks">上传书签</li>
+      <li id="downloadBookmarks">下载书签</li>
+      <li id="settings">设置</li>
+    </ul>
+  </div>
+
+  <script>
+    // WebDAV服务器配置（假设用户已填写设置）
+    const webdavConfig = {
+      serverUrl: "https://example.com/webdav/",
+      username: "your-username",
+      password: "your-password"
+    };
+
+    // 上传书签功能
+    document.getElementById('uploadBookmarks').addEventListener('click', async () => {
+      const file = await promptForBookmarkFile();
+      if (file) {
+        try {
+          const formData = new FormData();
+          formData.append("file", file);
+          await uploadBookmarkToWebdav(formData);
+          alert('书签上传成功！');
+        } catch (error) {
+          alert('上传失败: ' + error.message);
+        }
+      }
+    });
+
+    // 下载书签功能
+    document.getElementById('downloadBookmarks').addEventListener('click', async () => {
+      try {
+        const bookmarks = await downloadBookmarksFromWebdav();
+        alert('书签下载成功！');
+        console.log(bookmarks); // 可根据需要将书签导入浏览器
+      } catch (error) {
+        alert('下载失败: ' + error.message);
+      }
+    });
+
+    // 设置功能（可弹出配置窗口等）
+    document.getElementById('settings').addEventListener('click', () => {
+      alert('打开设置界面');
+    });
+
+    // 提示用户选择本地书签文件
+    async function promptForBookmarkFile() {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = '.html';
+      input.click();
+      
+      return new Promise((resolve, reject) => {
+        input.onchange = () => {
+          if (input.files.length > 0) {
+            resolve(input.files[0]);
+          } else {
+            reject('没有选择文件');
+          }
+        };
+      });
+    }
+
+    // 上传书签到WebDAV
+    async function uploadBookmarkToWebdav(formData) {
+      const response = await fetch(webdavConfig.serverUrl + 'upload-bookmark', {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Basic ' + btoa(webdavConfig.username + ":" + webdavConfig.password)
+        },
+        body: formData
+      });
+
+      if (!response.ok) {
+        throw new Error('上传失败');
+      }
+    }
+
+    // 从WebDAV下载书签
+    async function downloadBookmarksFromWebdav() {
+      const response = await fetch(webdavConfig.serverUrl + 'download-bookmark', {
+        method: 'GET',
+        headers: {
+          'Authorization': 'Basic ' + btoa(webdavConfig.username + ":" + webdavConfig.password)
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('下载失败');
+      }
+
+      return response.text(); // 假设返回的内容是HTML格式书签
+    }
+  </script>
+</body>
+
+</html>
