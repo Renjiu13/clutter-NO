@@ -1,12 +1,9 @@
-// manifest.json
 {
   "manifest_version": 3,
-  "name": "Bookmark Import/Export",
+  "name": "Enhanced Bookmarks",
   "version": "1.0",
-  "description": "Import and export bookmarks in multiple formats",
-  "permissions": [
-    "bookmarks"
-  ],
+  "description": "Enhanced bookmark manager with multi-column view",
+  "permissions": ["bookmarks", "storage"],
   "action": {
     "default_popup": "popup.html"
   }
