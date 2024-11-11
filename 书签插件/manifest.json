@@ -3,8 +3,12 @@
   "name": "Enhanced Bookmarks",
   "version": "1.0",
   "description": "Enhanced bookmark manager with multi-column view",
-  "permissions": ["bookmarks", "storage"],
-  "action": {
-    "default_popup": "popup.html"
-  }
+  "permissions": ["bookmarks", "storage", "tabs"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "chrome_url_overrides": {
+    "bookmarks": "manager.html"
+  },
+  "action": {}
 }
