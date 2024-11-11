@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name        新标签页打开(白名单)
 // @namespace   http://tampermonkey.net/
-// @version     1.1
-// @description  在白名单域名上修改链接为新标签页打开
+// @version     1.2
+// @description 在白名单域名上修改链接为新标签页打开
 // @author      YourName
 // @match       *://*/*
 // @grant       GM_getValue
@@ -67,6 +67,23 @@
         alert('当前白名单域名:\n' + (whitelist.length ? whitelist.join('\n') : '空'));
     }
 
+    // 修改白名单功能
+    function modifyWhitelist() {
+        const whitelist = getWhitelist();
+        const domain = prompt("请输入要添加或移除的域名:");
+        if (domain) {
+            const index = whitelist.indexOf(domain);
+            if (index > -1) {
+                whitelist.splice(index, 1);
+                alert(`已将 ${domain} 从白名单中移除`);
+            } else {
+                whitelist.push(domain);
+                alert(`已将 ${domain} 添加到白名单`);
+            }
+            saveWhitelist(whitelist);
+        }
+    }
+
     // 修改链接函数
     function modifyAllLinks() {
         try {
@@ -83,6 +100,7 @@
     GM_registerMenuCommand('添加当前域名到白名单', addToWhitelist);
     GM_registerMenuCommand('从白名单移除当前域名', removeFromWhitelist);
     GM_registerMenuCommand('查看白名单', showWhitelist);
+    GM_registerMenuCommand('修改白名单', modifyWhitelist);
 
     // 仅在白名单域名上执行链接修改
     if (isDomainWhitelisted(currentDomain)) {
