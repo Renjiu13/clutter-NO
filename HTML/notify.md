@@ -439,452 +439,412 @@ async function handleRequest(request) {
 
 脚本如下
 ```
-addEventListener('fetch', event => {
-  event.respondWith(handleRequest(event.request))
-})
-
-async function handleRequest(request) {
-  // 处理 POST 请求
-  if (request.method === 'POST') {
-    try {
-      const { message } = await request.json();
-      const pushPlusToken = PUSHPLUS_TOKEN;
-      
-      // 设置请求超时
-      const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 30000); // 30秒超时
-
+// index.js
+export default {
+    async fetch(request, env, ctx) {
       try {
-        // 发送请求到 PushPlus
-        const response = await fetch('https://www.pushplus.plus/send', {
-          method: 'POST',
-          signal: controller.signal,
-          headers: { 
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-          },
-          body: JSON.stringify({
-            token: pushPlusToken,
-            title: '挪车通知',
-            content: message,
-            template: 'html'
-          })
-        });
-
-        clearTimeout(timeout);
-
-        // 检查响应状态
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        // 尝试解析响应
-        let result;
-        const text = await response.text();
-        try {
-          result = JSON.parse(text);
-        } catch (e) {
-          throw new Error(`Invalid JSON response: ${text}`);
-        }
-
-        return new Response(JSON.stringify({
-          code: 200,
-          msg: 'success',
-           result
-        }), {
-          headers: { 
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*'
-          }
-        });
-
-      } catch (error) {
-        if (error.name === 'AbortError') {
-          return new Response(JSON.stringify({
-            code: 408,
-            msg: '请求超时，请稍后重试'
-          }), {
-            headers: { 
-              'Content-Type': 'application/json',
-              'Access-Control-Allow-Origin': '*'
-            }
-          });
-        }
-        throw error;
-      } finally {
-        clearTimeout(timeout);
+        return await handleRequest(request, env);
+      } catch (e) {
+        return new Response(`Error: ${e.message}`, { status: 500 });
       }
-
-    } catch (error) {
-      return new Response(JSON.stringify({
-        code: 500,
-        msg: `发送失败: ${error.message}`
-      }), {
-        headers: { 
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*'
-        }
+    }
+  };
+  
+  async function handleRequest(request, env) {
+    if (request.method === "OPTIONS") {
+      return new Response(null, {
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods": "GET, POST",
+          "Access-Control-Allow-Headers": "Content-Type",
+        },
       });
     }
-  }
-
-  // 处理 OPTIONS 请求（用于CORS预检）
-  if (request.method === 'OPTIONS') {
-    return new Response(null, {
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'POST, OPTIONS',
-        'Access-Control-Allow-Headers': 'Content-Type'
+  
+    if (request.method === "GET") {
+      return new Response(generateHTML(env.PHONE_NUMBER, env.SITE_ICON_URL), {
+        headers: {
+          "Content-Type": "text/html;charset=UTF-8",
+          "Access-Control-Allow-Origin": "*",
+        },
+      });
+    }
+  
+    if (request.method === "POST") {
+      try {
+        const data = await request.json();
+        const { type, message } = data;
+  
+        if (type === "message") {
+          await sendPushPlusNotification(
+            env.PUSHPLUS_TOKEN,
+            "挪车通知",
+            message
+          );
+          return jsonResponse({ success: true, message: "消息已发送" });
+        }
+  
+        return jsonResponse({ success: false, message: "无效的请求类型" }, 400);
+      } catch (error) {
+        return jsonResponse({ success: false, message: error.message }, 500);
       }
+    }
+  
+    return new Response("Not Found", { status: 404 });
+  }
+  
+  async function sendPushPlusNotification(token, title, content) {
+    const response = await fetch("http://www.pushplus.plus/send", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        token: token,
+        title: title,
+        content: content,
+        template: "html",
+      }),
+    });
+  
+    if (!response.ok) {
+      throw new Error('推送通知失败');
+    }
+  
+    return response.json();
+  }
+  
+  function jsonResponse(data, status = 200) {
+    return new Response(JSON.stringify(data), {
+      status,
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+      },
     });
   }
 
-  const phone = PHONE_NUMBER;
-  const siteIconUrl = SITE_ICON_URL;
-
-  const htmlContent = `
-    <!DOCTYPE html>
-    <html lang="zh-CN">
-      <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>通知车主挪车</title>
-        <link rel="icon" href="${siteIconUrl}" type="image/x-icon">
-        <style>
-          /* 样式保持不变 */
+  function generateHTML(phoneNumber, iconUrl) {
+    return `
+  <!DOCTYPE html>
+  <html lang="zh-CN">
+  <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="theme-color" content="#1e88e5">
+      <title>通知车主挪车</title>
+      <link rel="icon" href="${iconUrl}" type="image/x-icon">
+      <style>
+          :root {
+              --primary-color: #1e88e5;
+              --success-color: #43a047;
+              --border-color: #e0e0e0;
+              --bg-color: #f5f5f5;
+              --text-color: #212121;
+              --button-bg: #f8f9fa;
+              --button-active-bg: #e0e0e0;
+          }
+          
           * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+              box-sizing: border-box;
+              margin: 0;
+              padding: 0;
           }
           
           body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            line-height: 1.6;
-            background-color: #f8f9fa;
-            color: #333;
+              font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+              line-height: 1.5;
+              color: var(--text-color);
+              background-color: var(--bg-color);
+              padding: 24px;
+              min-height: 100vh;
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              justify-content: center;
           }
           
           .container {
-            max-width: 600px;
-            margin: 20px auto;
-            padding: 20px;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+              width: 100%;
+              max-width: 600px;
+              background: white;
+              border-radius: 12px;
+              box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+              overflow: hidden;
           }
           
-          h1 {
-            text-align: center;
-            color: #2c3e50;
-            margin-bottom: 20px;
-            font-size: 24px;
+          .header {
+              background: var(--primary-color);
+              padding: 24px;
+              text-align: center;
+              border-bottom: 1px solid var(--border-color);
+          }
+          
+          .header h1 {
+              color: white;
+              font-size: 24px;
+              font-weight: 600;
+              margin: 0;
+          }
+          
+          .content {
+              padding: 24px;
           }
           
           .message-area {
-            margin-bottom: 20px;
+              margin-bottom: 24px;
           }
           
-          textarea {
-            width: 100%;
-            height: 120px;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            resize: none;
-            font-size: 16px;
-            margin-bottom: 5px;
+          .textarea {
+              width: 100%;
+              padding: 16px;
+              border: 1px solid var(--border-color);
+              border-radius: 8px;
+              resize: vertical;
+              min-height: 150px;
+              font-size: 16px;
+              transition: border-color 0.2s ease;
+              margin-bottom: 8px;
+          }
+          
+          .textarea:focus {
+              outline: none;
+              border-color: var(--primary-color);
           }
           
           .char-count {
-            text-align: right;
-            color: #666;
-            font-size: 14px;
-            margin-bottom: 10px;
+              text-align: right;
+              color: #666;
+              font-size: 14px;
           }
           
-          .templates {
-            margin-bottom: 20px;
+          .template-buttons {
+              display: grid;
+              grid-template-columns: repeat(3, 1fr);
+              gap: 16px;
+              margin: 24px 0;
           }
           
-          .template-btn {
-            background: #f8f9fa;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            padding: 8px 15px;
-            margin: 0 5px 5px 0;
-            cursor: pointer;
-            font-size: 14px;
-            transition: all 0.3s ease;
+          .template-button {
+              padding: 12px;
+              border: 1px solid var(--border-color);
+              border-radius: 8px;
+              background: var(--button-bg);
+              cursor: pointer;
+              font-size: 14px;
+              transition: background-color 0.2s ease;
           }
           
-          .template-btn:hover {
-            background: #e9ecef;
+          .template-button:hover {
+              background: var(--button-active-bg);
           }
           
           .action-buttons {
-            display: flex;
-            gap: 10px;
+              display: grid;
+              grid-template-columns: 1fr 1fr;
+              gap: 16px;
+              margin-top: 24px;
           }
           
-          .btn {
-            flex: 1;
-            padding: 12px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: 500;
-            transition: all 0.3s ease;
+          .button {
+              padding: 16px 24px;
+              border: none;
+              border-radius: 8px;
+              cursor: pointer;
+              font-size: 16px;
+              font-weight: 600;
+              color: var(--text-color);
+              background: var(--button-bg);
+              transition: background-color 0.2s ease;
+              text-align: center;
+              text-decoration: none;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              line-height: 1.4;
           }
           
-          .notify-btn {
-            background: #007bff;
-            color: white;
+          .button:active {
+              background: var(--button-active-bg);
           }
           
-          .notify-btn:hover {
-            background: #0056b3;
+          .button:disabled {
+              opacity: 0.7;
+              cursor: not-allowed;
           }
           
-          .notify-btn:disabled {
-            background: #cccccc;
-            cursor: not-allowed;
+          .call-button:active {
+              background: var(--success-color);
+              color: white;
           }
           
-          .call-btn {
-            background: #28a745;
-            color: white;
+          .send-button:active {
+              background: var(--primary-color);
+              color: white;
           }
           
-          .call-btn:hover {
-            background: #218838;
+          .status {
+              margin-top: 24px;
+              padding: 12px 16px;
+              border-radius: 8px;
+              text-align: center;
+              display: none;
+              font-size: 15px;
           }
           
-          .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.5);
-            z-index: 1000;
+          .status.success {
+              background: #e8f5e9;
+              color: #2e7d32;
+              display: block;
           }
           
-          .modal-content {
-            position: relative;
-            background-color: white;
-            margin: 20% auto;
-            padding: 20px;
-            width: 90%;
-            max-width: 400px;
-            border-radius: 10px;
-            text-align: center;
+          .status.error {
+              background: #ffebee;
+              color: #c62828;
+              display: block;
           }
-          
-          .modal-title {
-            margin-bottom: 15px;
-            font-size: 18px;
-            color: #2c3e50;
-          }
-          
-          .modal-phone {
-            font-size: 24px;
-            color: #007bff;
-            margin-bottom: 20px;
-          }
-          
-          .modal-buttons {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-          }
-          
-          .modal-btn {
-            padding: 8px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: all 0.3s ease;
-          }
-          
-          .confirm-btn {
-            background: #28a745;
-            color: white;
-          }
-          
-          .confirm-btn:hover {
-            background: #218838;
-          }
-          
-          .cancel-btn {
-            background: #dc3545;
-            color: white;
-          }
-          
-          .cancel-btn:hover {
-            background: #c82333;
-          }
-        </style>
-      </head>
-      <body>
-        <div class="container">
-          <h1>通知车主挪车</h1>
-          
-          <div class="message-area">
-            <textarea id="messageInput" placeholder="请输入通知内容" oninput="updateCharCount()"></textarea>
-            <div id="charCount" class="char-count">0/200</div>
-          </div>
-          
-          <div class="templates">
-            <button class="template-btn" onclick="useTemplate('您好，有人需要您挪车，请及时处理。')">默认模板</button>
-            <button class="template-btn" onclick="useTemplate('您好，您的车辆阻碍他人通行，请尽快挪车，谢谢配合。')">礼貌模板</button>
-            <button class="template-btn" onclick="useTemplate('紧急情况！您的车辆阻碍消防通道，请立即挪车！')">紧急模板</button>
-          </div>
-          
-          <div class="action-buttons">
-            <button id="notifyBtn" class="btn notify-btn" onclick="notifyOwner()">发送通知</button>
-            <button class="btn call-btn" onclick="showCallModal()">拨打电话</button>
-          </div>
-        </div>
-
-        <div id="callModal" class="modal">
-          <div class="modal-content">
-            <h2 class="modal-title">确认拨打车主电话？</h2>
-            <div id="modalPhoneNumber" class="modal-phone"></div>
-            <div class="modal-buttons">
-              <button class="modal-btn confirm-btn" onclick="callOwner()">确认拨打</button>
-              <button class="modal-btn cancel-btn" onclick="hideCallModal()">取消</button>
-            </div>
-          </div>
-        </div>
-
-        <script>
-          const phoneNumber = '${phone}';
-
-          function useTemplate(template) {
-            const messageInput = document.getElementById('messageInput');
-            messageInput.value = template;
-            updateCharCount();
-          }
-
-          function updateCharCount() {
-            const messageInput = document.getElementById('messageInput');
-            const charCount = document.getElementById('charCount');
-            const notifyBtn = document.getElementById('notifyBtn');
-            const currentLength = messageInput.value.length;
-            
-            charCount.textContent = currentLength + '/200';
-            notifyBtn.disabled = currentLength === 0 || currentLength > 200;
-            
-            if (currentLength > 200) {
-              charCount.style.color = '#dc3545';
-            } else {
-              charCount.style.color = '#666';
-            }
-          }
-
-          function formatPhoneNumber(phone) {
-            return phone.replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3');
-          }
-
-          async function notifyOwner() {
-            const messageInput = document.getElementById('messageInput');
-            const message = messageInput.value.trim();
-            
-            if (!message) {
-              alert('请输入通知内容');
-              return;
-            }
-            
-            if (message.length > 200) {
-              alert('通知内容不能超过200字');
-              return;
-            }
-
-            const notifyBtn = document.getElementById('notifyBtn');
-            notifyBtn.disabled = true;
-            notifyBtn.textContent = '发送中...';
-
-            try {
-              const controller = new AbortController();
-              const timeoutId = setTimeout(() => controller.abort(), 30000);
-
-              const response = await fetch(window.location.href, {
-                method: 'POST',
-                signal: controller.signal,
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message })
-              });
-
-              clearTimeout(timeoutId);
-
-              if (!response.ok) {
-                throw new Error(\`HTTP error! status: \${response.status}\`);
+  
+          @media (max-width: 480px) {
+              body {
+                  padding: 16px;
               }
-
-              const result = await response.json();
               
-              if (result.code === 200) {
-                notifyBtn.textContent = '发送成功';
-                messageInput.value = '';
-                updateCharCount();
-              } else {
-                throw new Error(result.msg || '发送失败');
+              .template-buttons {
+                  grid-template-columns: 1fr;
               }
-            } catch (error) {
-              console.error("发送通知失败", error);
-              notifyBtn.textContent = '发送失败';
-              if (error.name === 'AbortError') {
-                alert('发送超时，请稍后重试');
-              } else {
-                alert('发送失败：' + error.message);
+              
+              .action-buttons {
+                  grid-template-columns: 1fr;
               }
-            } finally {
-              setTimeout(() => { 
-                notifyBtn.textContent = '发送通知'; 
-                notifyBtn.disabled = false; 
-              }, 2000);
-            }
+              
+              .button {
+                  width: 100%;
+              }
+              
+              .header {
+                  padding: 16px;
+              }
+              
+              .content {
+                  padding: 16px;
+              }
           }
-
-          function showCallModal() {
-            const formattedNumber = formatPhoneNumber(phoneNumber);
-            document.getElementById('modalPhoneNumber').textContent = formattedNumber;
-            document.getElementById('callModal').style.display = 'block';
-          }
-
-          function hideCallModal() {
-            document.getElementById('callModal').style.display = 'none';
-          }
-
-          function callOwner() {
-            window.location.href = \`tel:\${phoneNumber}\`;
-            hideCallModal();
-          }
-
-          document.addEventListener('DOMContentLoaded', () => {
-            useTemplate('您好，有人需要您挪车，请及时处理。');
+      </style>
+  </head>
+  <body>
+      <div class="container">
+          <div class="header">
+              <h1>通知车主挪车</h1>
+          </div>
+          
+          <div class="content">
+              <div class="message-area">
+                  <textarea id="messageInput" class="textarea" 
+                      placeholder=""
+                      maxlength="200"></textarea>
+                  <div class="char-count">
+                      <span id="charCount">0</span>/200
+                  </div>
+              </div>
+  
+              <div class="template-buttons">
+                  <button class="template-button" onclick="useTemplate('default')">
+                      默认通知
+                  </button>
+                  <button class="template-button" onclick="useTemplate('polite')">
+                      礼貌通知
+                  </button>
+                  <button class="template-button" onclick="useTemplate('urgent')">
+                      紧急通知
+                  </button>
+              </div>
+  
+              <div class="action-buttons">
+                  <button onclick="makeCall('${phoneNumber}')" class="button call-button">
+                      拨打电话
+                  </button>
+                  <button id="sendButton" class="button send-button" onclick="sendMessage()">
+                      发送消息
+                  </button>
+              </div>
+              
+              <div id="status" class="status"></div>
+          </div>
+      </div>
+  
+      <script>
+          const messageInput = document.getElementById('messageInput');
+          const charCountEl = document.getElementById('charCount');
+          const sendButton = document.getElementById('sendButton');
+          const status = document.getElementById('status');
+  
+          const templates = {
+              default: "您好，有人需要您挪车，请及时处理。",
+              polite: "您好，很抱歉打扰您。您的爱车可能影响到他人通行，请问方便移动一下吗？",
+              urgent: "紧急！！！ 您的车辆需要立即移动，请尽快处理！"
+          };
+  
+          messageInput.addEventListener('input', () => {
+              charCountEl.textContent = messageInput.value.length;
           });
-
-          window.onclick = function(event) {
-            const modal = document.getElementById('callModal');
-            if (event.target === modal) {
-              hideCallModal();
-            }
+  
+          function useTemplate(type) {
+              messageInput.value = templates[type] || "";
+              charCountEl.textContent = messageInput.value.length;
           }
-        </script>
-      </body>
-    </html>
-  `;
-
-  return new Response(htmlContent, {
-    headers: { 
-      'Content-Type': 'text/html;charset=UTF-8'
-    }
-  });
+  
+          function makeCall(phoneNumber) {
+              window.location.href = 'tel:' + phoneNumber;
+          }
+  
+          function showStatus(message, isError = false) {
+              status.textContent = message;
+              status.className = 'status ' + (isError ? 'error' : 'success');
+              setTimeout(() => {
+                  status.className = 'status';
+              }, 3000);
+          }
+  
+          async function sendMessage() {
+              const message = messageInput.value.trim();
+              if (!message) {
+                  showStatus('请输入要发送的信息', true);
+                  return;
+              }
+  
+              sendButton.disabled = true;
+              try {
+                  const response = await fetch('', {
+                      method: 'POST',
+                      headers: {
+                          'Content-Type': 'application/json',
+                      },
+                      body: JSON.stringify({
+                          type: 'message',
+                          message: message
+                      })
+                  });
+                  
+                  const data = await response.json();
+                  if (response.ok) {
+                      showStatus('消息已发送');
+                      messageInput.value = '';
+                      charCountEl.textContent = '0';
+                  } else {
+                      throw new Error(data.message || '发送失败');
+                  }
+              } catch (error) {
+                  showStatus(error.message || '发送失败，请重试', true);
+              } finally {
+                  sendButton.disabled = false;
+              }
+          }
+  
+          // 初始化
+          useTemplate('default');
+      </script>
+  </body>
+  </html>
+    `;
 }
-
 ```
