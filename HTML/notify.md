@@ -131,325 +131,330 @@ export default {
 
   function generateHTML(phoneNumber, iconUrl) {
     return `
-  <!DOCTYPE html>
-  <html lang="zh-CN">
-  <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <meta name="theme-color" content="#1e88e5">
-      <title>通知车主挪车</title>
-      <link rel="icon" href="${iconUrl}" type="image/x-icon">
-      <style>
-          :root {
-              --primary-color: #1e88e5;
-              --success-color: #43a047;
-              --border-color: #e0e0e0;
-              --bg-color: #f5f5f5;
-              --text-color: #212121;
-              --button-bg: #f8f9fa;
-              --button-active-bg: #e0e0e0;
-          }
-          
-          * {
-              box-sizing: border-box;
-              margin: 0;
-              padding: 0;
-          }
-          
-          body {
-              font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-              line-height: 1.5;
-              color: var(--text-color);
-              background-color: var(--bg-color);
-              padding: 24px;
-              min-height: 100vh;
-              display: flex;
-              flex-direction: column;
-              align-items: center;
-              justify-content: center;
-          }
-          
-          .container {
-              width: 100%;
-              max-width: 600px;
-              background: white;
-              border-radius: 12px;
-              box-shadow: 0 4px 16px rgba(0,0,0,0.1);
-              overflow: hidden;
-          }
-          
-          .header {
-              background: var(--primary-color);
-              padding: 24px;
-              text-align: center;
-              border-bottom: 1px solid var(--border-color);
-          }
-          
-          .header h1 {
-              color: white;
-              font-size: 24px;
-              font-weight: 600;
-              margin: 0;
-          }
-          
-          .content {
-              padding: 24px;
-          }
-          
-          .message-area {
-              margin-bottom: 24px;
-          }
-          
-          .textarea {
-              width: 100%;
-              padding: 16px;
-              border: 1px solid var(--border-color);
-              border-radius: 8px;
-              resize: vertical;
-              min-height: 150px;
-              font-size: 16px;
-              transition: border-color 0.2s ease;
-              margin-bottom: 8px;
-          }
-          
-          .textarea:focus {
-              outline: none;
-              border-color: var(--primary-color);
-          }
-          
-          .char-count {
-              text-align: right;
-              color: #666;
-              font-size: 14px;
-          }
-          
-          .template-buttons {
-              display: grid;
-              grid-template-columns: repeat(3, 1fr);
-              gap: 16px;
-              margin: 24px 0;
-          }
-          
-          .template-button {
-              padding: 12px;
-              border: 1px solid var(--border-color);
-              border-radius: 8px;
-              background: var(--button-bg);
-              cursor: pointer;
-              font-size: 14px;
-              transition: background-color 0.2s ease;
-          }
-          
-          .template-button:hover {
-              background: var(--button-active-bg);
-          }
-          
-          .action-buttons {
-              display: grid;
-              grid-template-columns: 1fr 1fr;
-              gap: 16px;
-              margin-top: 24px;
-          }
-          
-          .button {
-              padding: 16px 24px;
-              border: none;
-              border-radius: 8px;
-              cursor: pointer;
-              font-size: 16px;
-              font-weight: 600;
-              color: var(--text-color);
-              background: var(--button-bg);
-              transition: background-color 0.2s ease;
-              text-align: center;
-              text-decoration: none;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              line-height: 1.4;
-          }
-          
-          .button:active {
-              background: var(--button-active-bg);
-          }
-          
-          .button:disabled {
-              opacity: 0.7;
-              cursor: not-allowed;
-          }
-          
-          .call-button:active {
-              background: var(--success-color);
-              color: white;
-          }
-          
-          .send-button:active {
-              background: var(--primary-color);
-              color: white;
-          }
-          
-          .status {
-              margin-top: 24px;
-              padding: 12px 16px;
-              border-radius: 8px;
-              text-align: center;
-              display: none;
-              font-size: 15px;
-          }
-          
-          .status.success {
-              background: #e8f5e9;
-              color: #2e7d32;
-              display: block;
-          }
-          
-          .status.error {
-              background: #ffebee;
-              color: #c62828;
-              display: block;
-          }
-  
-          @media (max-width: 480px) {
-              body {
-                  padding: 16px;
-              }
-              
-              .template-buttons {
-                  grid-template-columns: 1fr;
-              }
-              
-              .action-buttons {
-                  grid-template-columns: 1fr;
-              }
-              
-              .button {
-                  width: 100%;
-              }
-              
-              .header {
-                  padding: 16px;
-              }
-              
-              .content {
-                  padding: 16px;
-              }
-          }
-      </style>
-  </head>
-  <body>
-      <div class="container">
-          <div class="header">
-              <h1>通知车主挪车</h1>
-          </div>
-          
-          <div class="content">
-              <div class="message-area">
-                  <textarea id="messageInput" class="textarea" 
-                      placeholder=""
-                      maxlength="200"></textarea>
-                  <div class="char-count">
-                      <span id="charCount">0</span>/200
-                  </div>
-              </div>
-  
-              <div class="template-buttons">
-                  <button class="template-button" onclick="useTemplate('default')">
-                      默认通知
-                  </button>
-                  <button class="template-button" onclick="useTemplate('polite')">
-                      礼貌通知
-                  </button>
-                  <button class="template-button" onclick="useTemplate('urgent')">
-                      紧急通知
-                  </button>
-              </div>
-  
-              <div class="action-buttons">
-                  <button onclick="makeCall('${phoneNumber}')" class="button call-button">
-                      拨打电话
-                  </button>
-                  <button id="sendButton" class="button send-button" onclick="sendMessage()">
-                      发送消息
-                  </button>
-              </div>
-              
-              <div id="status" class="status"></div>
-          </div>
-      </div>
-  
-      <script>
-          const messageInput = document.getElementById('messageInput');
-          const charCountEl = document.getElementById('charCount');
-          const sendButton = document.getElementById('sendButton');
-          const status = document.getElementById('status');
-  
-          const templates = {
-              default: "您好，有人需要您挪车，请及时处理。",
-              polite: "您好，很抱歉打扰您。您的爱车可能影响到他人通行，请问方便移动一下吗？",
-              urgent: "紧急！！！ 您的车辆需要立即移动，请尽快处理！"
-          };
-  
-          messageInput.addEventListener('input', () => {
-              charCountEl.textContent = messageInput.value.length;
-          });
-  
-          function useTemplate(type) {
-              messageInput.value = templates[type] || "";
-              charCountEl.textContent = messageInput.value.length;
-          }
-  
-          function makeCall(phoneNumber) {
-              window.location.href = 'tel:' + phoneNumber;
-          }
-  
-          function showStatus(message, isError = false) {
-              status.textContent = message;
-              status.className = 'status ' + (isError ? 'error' : 'success');
-              setTimeout(() => {
-                  status.className = 'status';
-              }, 3000);
-          }
-  
-          async function sendMessage() {
-              const message = messageInput.value.trim();
-              if (!message) {
-                  showStatus('请输入要发送的信息', true);
-                  return;
-              }
-  
-              sendButton.disabled = true;
-              try {
-                  const response = await fetch('', {
-                      method: 'POST',
-                      headers: {
-                          'Content-Type': 'application/json',
-                      },
-                      body: JSON.stringify({
-                          type: 'message',
-                          message: message
-                      })
-                  });
-                  
-                  const data = await response.json();
-                  if (response.ok) {
-                      showStatus('消息已发送');
-                      messageInput.value = '';
-                      charCountEl.textContent = '0';
-                  } else {
-                      throw new Error(data.message || '发送失败');
-                  }
-              } catch (error) {
-                  showStatus(error.message || '发送失败，请重试', true);
-              } finally {
-                  sendButton.disabled = false;
-              }
-          }
-  
-          // 初始化
-          useTemplate('default');
-      </script>
-  </body>
-  </html>
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#1e88e5">
+    <title>通知车主挪车</title>
+    <link rel="icon" href="${iconUrl}" type="image/x-icon">
+    <style>
+        :root {
+            --primary-color: #1e88e5;
+            --success-color: #43a047;
+            --border-color: #e0e0e0;
+            --bg-color: #f5f5f5;
+            --text-color: #212121;
+            --button-bg: #f8f9fa;
+            --button-active-bg: #e0e0e0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            line-height: 1.5;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 24px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            padding: 24px;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .content {
+            padding: 24px;
+        }
+
+        .message-area {
+            margin-bottom: 24px;
+        }
+
+        .textarea {
+            width: 100%;
+            padding: 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            resize: vertical;
+            min-height: 150px;
+            font-size: 16px;
+            transition: border-color 0.2s ease;
+            margin-bottom: 8px;
+            color: #aaa;
+        }
+
+        .textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            color: var(--text-color);
+        }
+
+        .char-count {
+            text-align: right;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .template-buttons {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin: 24px 0;
+        }
+
+        .template-button {
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--button-bg);
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.2s ease;
+        }
+
+        .template-button:hover {
+            background: var(--button-active-bg);
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-top: 24px;
+        }
+
+        .button {
+            padding: 16px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-color);
+            background: var(--button-bg);
+            transition: background-color 0.2s ease;
+            text-align: center;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1.4;
+        }
+
+        .button:active {
+            background: var(--button-active-bg);
+        }
+
+        .button:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .call-button:active {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .send-button:active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .status {
+            margin-top: 24px;
+            padding: 12px 16px;
+            border-radius: 8px;
+            text-align: center;
+            display: none;
+            font-size: 15px;
+        }
+
+        .status.success {
+            background: #e8f5e9;
+            color: #2e7d32;
+            display: block;
+        }
+
+        .status.error {
+            background: #ffebee;
+            color: #c62828;
+            display: block;
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 16px;
+            }
+
+            .template-buttons {
+                grid-template-columns: 1fr;
+            }
+
+            .action-buttons {
+                grid-template-columns: 1fr;
+            }
+
+            .button {
+                width: 100%;
+            }
+
+            .header {
+                padding: 16px;
+            }
+
+            .content {
+                padding: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>通知车主挪车</h1>
+        </div>
+
+        <div class="content">
+            <div class="message-area">
+                <textarea id="messageInput" class="textarea" 
+                    placeholder="请输入您要发送的信息"
+                    maxlength="200"></textarea>
+                <div class="char-count">
+                    <span id="charCount">0</span>/200
+                </div>
+            </div>
+
+            <div class="template-buttons">
+                <button class="template-button" onclick="useTemplate('default')">
+                    默认通知
+                </button>
+                <button class="template-button" onclick="useTemplate('polite')">
+                    礼貌通知
+                </button>
+                <button class="template-button" onclick="useTemplate('urgent')">
+                    紧急通知
+                </button>
+            </div>
+
+            <div class="action-buttons">
+                <button onclick="makeCall('${phoneNumber}')" class="button call-button">
+                    拨打电话
+                </button>
+                <button id="sendButton" class="button send-button" onclick="sendMessage()">
+                    发送消息
+                </button>
+            </div>
+
+            <div id="status" class="status"></div>
+        </div>
+    </div>
+
+    <script>
+        const messageInput = document.getElementById('messageInput');
+        const charCountEl = document.getElementById('charCount');
+        const sendButton = document.getElementById('sendButton');
+        const status = document.getElementById('status');
+
+        const templates = {
+            default: "您好，有人需要您挪车，请及时处理。",
+            polite: "您好，很抱歉打扰您。您的爱车可能影响到他人通行，请问方便移动一下吗？",
+            urgent: "紧急！！！ 您的车辆需要立即移动，请尽快处理！"
+        };
+
+        messageInput.addEventListener('input', () => {
+            charCountEl.textContent = messageInput.value.length;
+            if (messageInput.value.trim() === '') {
+                messageInput.style.color = "#aaa";
+            } else {
+                messageInput.style.color = "var(--text-color)";
+            }
+        });
+
+        function useTemplate(type) {
+            messageInput.value = templates[type] || "";
+            charCountEl.textContent = messageInput.value.length;
+        }
+
+        function makeCall(phoneNumber) {
+            window.location.href = 'tel:' + phoneNumber;
+        }
+
+        function showStatus(message, isError = false) {
+            status.textContent = message;
+            status.className = 'status ' + (isError ? 'error' : 'success');
+            setTimeout(() => {
+                status.className = 'status';
+            }, 3000);
+        }
+
+        async function sendMessage() {
+            const message = messageInput.value.trim();
+            if (!message) {
+                showStatus('请输入要发送的信息', true);
+                return;
+            }
+
+            sendButton.disabled = true;
+            try {
+                const response = await fetch('', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        type: 'message',
+                        message: message
+                    })
+                });
+                
+                const data = await response.json();
+                if (response.ok) {
+                    showStatus('消息已发送');
+                    messageInput.value = '';
+                    charCountEl.textContent = '0';
+                } else {
+                    throw new Error(data.message || '发送失败');
+                }
+            } catch (error) {
+                showStatus(error.message || '发送失败，请重试', true);
+            } finally {
+                sendButton.disabled = false;
+            }
+        }
+
+        // 初始化
+        useTemplate('default');
+    </script>
+</body>
+</html>
     `;
 }
 ```
