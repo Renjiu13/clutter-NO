@@ -438,7 +438,7 @@ async function handleRequest(request) {
 
 
 脚本如下
-```json
+```
 addEventListener('fetch', event => {
   event.respondWith(handleRequest(event.request))
 })
