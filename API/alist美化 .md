@@ -176,3 +176,137 @@ body {
 }
 </style>
 ```
+
+
+## 自定义内容
+
+```
+<div id="customize" style="display: none;">
+    <div>
+        <!--音乐播放器-->
+        <meting-js fixed="true" autoplay="false" theme="#409EFF" list-folded="true" auto="QQ音乐或者网易云的链接"></meting-js>
+        
+        <!--评论模块还有下面的script也是-->
+        <center>
+            <div class="newValine" id="vcomments"></div>
+        </center>
+        <script>
+            new Valine({
+                visitor: true,
+                el: '#vcomments',
+                avatar: 'wavatar',
+                appId: 'Your appId',
+                appKey: 'Your appKey',
+                placeholder: "有什么问题欢迎评论区留言~么么哒"
+            }) 
+        </script>
+
+        <br />
+        <center class="dibu">
+            <div style=" line-height: 20px;font-size: 9pt;font-weight: bold;">
+                <span>
+                    "
+                    <span style="color: rgb(13, 109, 252); font-weight: bold;" id="hitokoto">
+                        <a href="#" id="hitokoto_text">
+                            "人生最大的遗憾,就是在最无能为力的时候遇到一个想要保护一生的人."
+                        </a>
+                    </span> "
+                </span>
+            </div>
+
+            <div style="font-size: 13px; font-weight: bold;">
+                <span class="nav-item">
+                    <a class="nav-link" href="xxxxxxxxxx"
+                        target="_blank">
+                        <i class="fab fa-qq" style="color:#409EFF" aria-hidden="true">
+                        </i>
+                        QQ |
+                    </a>
+                </span>
+                <span class="nav-item">
+                    <a class="nav-link" href="mailto:xxxxx@foxmail.com" target="_blank">
+                        <i class="fa-duotone fa-envelope-open" style="color:#409EFF" aria-hidden="true">
+                        </i>
+                        邮箱 |
+                    </a>
+                </span>
+                <span class="nav-item">
+                    <a class="nav-link" href="xxxxxx" target="_blank">
+                        <i class="fas fa-edit" style="color:#409EFF" aria-hidden="true">
+                        </i>
+                        博客 |
+                    </a>
+                </span>
+                <span class="nav-item">
+                    <a class="nav-link" href="xxxxxxxx" target="_blank">
+                        <i class="fas fa-comment-lines" style="color:#409EFF;" aria-hidden="true">
+                        </i>
+                        留言 |
+                    </a>
+                </span>
+                <span class="nav-item">
+                    <a class="nav-link" href="xxxxxxx" target="_blank">
+                        <i class="fa fa-cloud-download" style="color:#409EFF;" aria-hidden="true">
+                        </i>
+                        云盘 |
+                    </a>
+                </span>
+                <!--后台入口-->
+                <span class="nav-item">
+                    <a class="nav-link" href="/@manage" target="_blank">
+                        <i class="fa-solid fa-folder-gear" style="color:#409EFF;" aria-hidden="true">
+                        </i>
+                        管理 |
+                    </a>
+                </span>
+                <!--版权，请尊重作者-->
+                <span class="nav-item">
+                    <a class="nav-link" href="https://github.com/Xhofe/alist" target="_blank">
+                        <i class="fa-solid fa-copyright" style="color:#409EFF;" aria-hidden="true">
+                        </i>
+                        Alist
+                    </a>
+                </span>
+            </div>
+        </center>
+        <br />
+        <br />
+    </div>
+
+    <!--一言API-->
+    <script src="https://v1.hitokoto.cn/?encode=js&select=%23hitokoto" defer></script>
+</div>
+<!--延迟加载配套使用JS-->
+<script>
+    let interval = setInterval(() => {
+        if (document.querySelector(".footer")) {
+            document.querySelector("#customize").style.display = "";
+            clearInterval(interval);
+        }
+    }, 200);
+</script>
+
+<!-- 渐变背景初始化 -->
+<script src="https://npm.elemecdn.com/granim@2.0.0/dist/granim.min.js"></script>
+<script>
+var granimInstance = new Granim({
+    element: '#canvas-basic',
+    direction: 'left-right',
+    isPausedWhenNotInView: true,
+    states : {
+        "default-state": {
+            gradients: [
+                ['#a18cd1', '#fbc2eb'],
+                ['#fff1eb', '#ace0f9'],
+                ['#d4fc79', '#96e6a1'],
+                ['#a1c4fd', '#c2e9fb'],
+                ['#a8edea', '#fed6e3'],
+                ['#9890e3', '#b1f4cf'],
+                ['#a1c4fd', '#c2e9fb'],
+                ['#fff1eb', '#ace0f9']
+            ]
+        }
+    }
+});
+</script>
+```
