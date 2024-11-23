@@ -180,6 +180,63 @@ body {
 
 ## 自定义内容
 
+### 主要使用
+
+```
+<div id="customize" style="display: none; font-size: 15px; text-align: center;">
+    <div>
+        <!-- 底部导航链接部分 -->
+        <div style="font-weight: bold;">
+            <span class="nav-item">
+                <a class="nav-link" href="mailto:952903798@qq.com" target="_blank">
+                    <i class="fa-duotone fa-envelope-open" style="color:#409EFF" aria-hidden="true"></i>
+                    邮箱 |
+                </a>
+            </span>
+            <span class="nav-item">
+                <a class="nav-link" href="https://roswe.rf.gd/" target="_blank">
+                    <i class="fas fa-edit" style="color:#409EFF" aria-hidden="true"></i>
+                    博客 |
+                </a>
+            </span>
+            <span class="nav-item">
+                <a class="nav-link" href="/@manage" target="_blank">
+                    <i class="fa-solid fa-folder-gear" style="color:#409EFF" aria-hidden="true"></i>
+                    管理 |
+                </a>
+            </span>
+        </div>
+        <br />
+
+        <!-- 一言 API 部分 -->
+        <div style="line-height: 20px; font-weight: bold;">
+            <span>
+                "
+                <span style="color: rgb(13, 109, 252); font-weight: bold;" id="hitokoto">
+                    <a href="#" id="hitokoto_text">
+                        "人生最大的遗憾,就是在最无能为力的时候遇到一个想要保护一生的人."
+                    </a>
+                </span> "
+            </span>
+        </div>
+        <script src="https://v1.hitokoto.cn/?encode=js&select=%23hitokoto" defer></script>
+    </div>
+</div>
+
+<!-- 延迟加载定制内容 -->
+<script>
+    // 延迟加载定制内容
+    let interval = setInterval(() => {
+        if (document.querySelector(".footer")) {
+            document.querySelector("#customize").style.display = "";
+            clearInterval(interval);
+        }
+    }, 200);
+</script>
+```
+
+
+### 收集的，上方为优化的
 
 ```
 <div id="customize" style="display: none;">
