@@ -1,3 +1,6 @@
+## 介绍
+
+此文件为我的个人局域网服务器报告本机的IP地址使用
 
 ## 使用PushPlus
 
@@ -9,7 +12,7 @@
 
 # PushPlus token  
 
-PUSHPLUS_TOKEN="048f*5912a91*cecba76*28sf4be8cd0a"  
+PUSHPLUS_TOKEN="048f*5912a91*cecbdfga76*28sf4be8cd0a"  
 
   
 
@@ -205,4 +208,44 @@ else
     echo "发送通知失败: $RESPONSE"  
 fi
 
+```
+
+
+## 使用飞书机器人
+
+```
+#!/bin/bash  
+  
+# 飞书机器人 Webhook URL  
+FEISHU_WEBHOOK="https://open.feishu.cn/open-apis/bot/v2/hook/e929694e-10e9-4947-8b29-2b956cb63f13"  
+  
+# 获取主机名称  
+HOSTNAME=$(hostname)  
+  
+# 获取当前IPv4地址  
+IPV4=$(curl -s myip.ipip.net | awk -F '：| ' '{print $3}')  
+  
+# 获取当前IPv6地址  
+IPV6=$(curl -s -6 icanhazip.com)  
+  
+# 获取局域网IP地址  
+LOCAL_IP=$(ip addr show | grep "inet " | grep -v "127.0.0.1" | awk '{print $2}' | head -n 1)  
+  
+# 获取问候语  
+GREETING=$(curl -s https://v1.hitokoto.cn/ | jq -r '.hitokoto')  
+  
+# 消息内容  
+MESSAGE="设备名称：$HOSTNAME\n\n阿旺您好！\n\n您的IPv4地址：$IPV4\n您的IPv6地址：$IPV6\n您局域网地址：$LOCAL_IP\n\n----------------------\n$GREETING"  
+  
+# 发送通知到飞书机器人  
+curl -s -X POST $FEISHU_WEBHOOK \  
+     -H "Content-Type: application/json" \  
+     -d '{  
+           "msg_type": "text",  
+           "content": {  
+             "text": "'"$MESSAGE"'"  
+           }  
+         }'  
+  
+echo "通知已发送。"
 ```
