@@ -217,7 +217,7 @@ fi
 #!/bin/bash  
   
 # 飞书机器人 Webhook URL  
-FEISHU_WEBHOOK="https://open.feishu.cn/open-apis/bot/v2/hook/e929694e-10e9-4947-8b29-2b956cb63f13"  
+FEISHU_WEBHOOK="https://open.feishu.cn/open-apis/bot/v2/hook/e92994e-1dge9-4gs47-8sgfhab29-gdsg56cb63f13"  
   
 # 获取主机名称  
 HOSTNAME=$(hostname)  
