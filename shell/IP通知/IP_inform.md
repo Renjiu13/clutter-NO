@@ -127,10 +127,10 @@ fi
 #!/bin/bash  
 
 # 钉钉机器人 Webhook URL  
-DINGTALK_URL="https://oapi.dingtalk.com/robot/send?access_token=d1608cdb218267b407010ea0bb156ff17891cdb2c135ff7b9a"
+DINGTALK_URL="https://oapi.dingtalk.com/robot/send?access_token=d1608cdb218267b4070**fgfasg**156ff17891cddghb2c135ff7b9a"
 
 # 钉钉机器人加签密钥  
-SIGNATURE_SECRET="SEC0a10516b4f77f580e70011ec1905b91232647b997fc8dd"
+SIGNATURE_SECRET="SEC0a1dshjs0516b4f77f580e70011sdghec1905b91232647b997fc8dd"
 
 # 获取当前IPv4地址，超时4秒  
 IPV4=$(timeout 4s curl -s myip.ipip.net | awk -F '：| ' '{print $3}') || IPV4="获取IPv4地址超时"  
