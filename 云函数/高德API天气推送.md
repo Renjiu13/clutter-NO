@@ -79,13 +79,12 @@ def send_dingtalk_message(webhook, secret, message):
         'Content-Type': 'application/json'
     }
     
+    # 仅传递消息内容部分，确保是纯文本
     data = {
         "msgtype": "text",
         "text": {
             "content": message
-        },
-        "timestamp": timestamp,
-        "sign": sign
+        }
     }
     
     req = urllib.request.Request(
@@ -144,24 +143,5 @@ def main_handler(event, context):
     
     return {"statusCode": 200, "body": "Weather forecast sent"}
 
-# 示例消息格式
-# 天气预报通知
-# 城市：杭州市
-# 当前时间：2023年10月01日 12:00
-#
-# 未来三天天气预报：
-# 1. 2023年10月02日
-#   白天：晴  |  夜间：晴
-#   温度：25°C / 18°C
-#   风向：东风 3 级
-#
-# 2. 2023年10月03日
-#   白天：多云  |  夜间：晴
-#   温度：26°C / 19°C
-#   风向：东北风 4 级
-#
-# 3. 2023年10月04日
-#   白天：晴  |  夜间：晴
-#   温度：27°C / 20°C
-#   风向：东南风 3 级
+
 ```
