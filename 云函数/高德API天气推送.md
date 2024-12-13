@@ -30,7 +30,7 @@ https://wwmd.lanzouv.com/i8qCo2hz5y1a  密码:52pj
 
 代码如下
 
-```python
+``` python
 import os
 import json
 import time
@@ -129,8 +129,8 @@ def main_handler(event, context):
                   f"未来三天天气预报：\n"
         
         # 添加3天天气预报
-        for index, day in enumerate(weather_forecast['forecast'][:3], 1):
-            message += f"{index}. {day['date']}\n" \
+        for day in weather_forecast['forecast'][:3]:
+            message += f"{day['date']}\n" \
                        f"  白天：{day['dayweather']}  |  夜间：{day['nightweather']}\n" \
                        f"  温度：{day['daytemp']}°C / {day['nighttemp']}°C\n" \
                        f"  风向：{day['daywind']} {day['daypower']} 级\n\n"
@@ -142,6 +142,5 @@ def main_handler(event, context):
         send_dingtalk_message(dingtalk_webhook, dingtalk_secret, message)
     
     return {"statusCode": 200, "body": "Weather forecast sent"}
-
 
 ```
