@@ -31,6 +31,7 @@ https://wwmd.lanzouv.com/i8qCo2hz5y1a  密码:52pj
 代码如下
 
 ``` python
+# index.py
 import os
 import json
 import time
@@ -79,12 +80,13 @@ def send_dingtalk_message(webhook, secret, message):
         'Content-Type': 'application/json'
     }
     
-    # 仅传递消息内容部分，确保是纯文本
     data = {
         "msgtype": "text",
         "text": {
             "content": message
-        }
+        },
+        "timestamp": timestamp,
+        "sign": sign
     }
     
     req = urllib.request.Request(
@@ -100,6 +102,12 @@ def send_dingtalk_message(webhook, secret, message):
     except Exception as e:
         print(f"发送消息失败: {e}")
         return None
+
+def get_chinese_weekday(date_str):
+    """根据日期字符串获取中文星期"""
+    weekdays = ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"]
+    date_obj = datetime.strptime(date_str, "%Y-%m-%d")
+    return weekdays[date_obj.weekday()]
 
 def main_handler(event, context):
     """主处理函数"""
@@ -123,17 +131,19 @@ def main_handler(event, context):
     
     if weather_forecast:
         # 构建消息
-        message = f"天气预报通知\n" \
-                  f"城市：{weather_forecast['city']}\n" \
-                  f"当前时间：{date_str} {time_str}\n\n" \
-                  f"未来三天天气预报：\n"
+        message = f"天气预报\n" \
+                  f"日期：{date_str}\n" \
+                  f"时间：{time_str}\n" \
+                  f"城市：{weather_forecast['city']}\n\n"
         
         # 添加3天天气预报
-        for day in weather_forecast['forecast'][:3]:
-            message += f"{day['date']}\n" \
-                       f"  白天：{day['dayweather']}  |  夜间：{day['nightweather']}\n" \
-                       f"  温度：{day['daytemp']}°C / {day['nighttemp']}°C\n" \
-                       f"  风向：{day['daywind']} {day['daypower']} 级\n\n"
+        for index, day in enumerate(weather_forecast['forecast'][:3], 1):
+            weekday = get_chinese_weekday(day['date'])
+            message += f"第{index}天 {day['date']} {weekday}\n" \
+                       f"白天：{day['dayweather']}\n" \
+                       f"夜间：{day['nightweather']}\n" \
+                       f"温度：{day['daytemp']}°C / {day['nighttemp']}°C\n" \
+                       f"风向：{day['daywind']} {day['daypower']} 级\n\n"
         
         # 去除最后的换行
         message = message.rstrip()
