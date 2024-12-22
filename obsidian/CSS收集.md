@@ -345,3 +345,130 @@ settings:
         type: class-toggle
 */
 ```
+
+
+## 代办事项
+
+### 清除任务的删除线
+
+```
+/* 
+@Author   : 咖啡豆
+@contact  : https://obsidian.vip/
+@File     : coffeebean-去除删除线-任务回顾专用.css
+@Software : vscode
+@Date     : 2022-10-17
+@upDate   : 2022-10-17
+@Desc     : CSS提供给系统yaml调用，调用格式如下
+            ---
+            cssclass: coffeebean-del-checklist-done-decoration
+            ---
+@Source    :[CSS片段-清除任务的删除线 | obsidian文档咖啡豆版](https://obsidian.vip/zh/css-snippets/coffeebean-del-checklist-done-decoration.html)
+*/
+
+/* 去除删除线效果 */
+.coffeebean-del-checklist-done-decoration ul > li.task-list-item[data-task="x"], ul > li.task-list-item[data-task="X"]{
+    text-decoration: none !important;
+}
+
+```
+
+
+## 表格优化
+
+
+### 优化一
+
+```
+/* 来源地址 */
+/* https://forum-zh.obsidian.md/t/topic/27878/18 */
+
+body {
+    /* 表格圆角大小 */
+    --table-radius: var(--size-2-3);
+    /* 表格按钮颜色 */
+    --table-btn-color: #fff;
+    /* 表格按钮背景色 */
+    --table-btn-bg: #ddd;
+    /* 表格头背景色 */
+    --table-header-bg: #f4f4f4;
+    /* 表格隔行背景色 */
+    --table-alt-line-bg: #fff;
+    /* 动画时间 */
+    --animation: 200ms var(--anim-motion-smooth);
+  }
+  
+  .markdown-rendered table {
+    border-collapse: initial;
+    border-spacing: 0;
+  }
+  
+  :is(.markdown-source-view.mod-cm6 .cm-table-widget .table-wrapper, .markdown-rendered table) {
+    --table-white-space: break-all;
+    width: 100%;
+  }
+  :is(.markdown-source-view.mod-cm6 .cm-table-widget .table-wrapper, .markdown-rendered table) .table-editor {
+    width: 100%;
+  }
+  :is(.markdown-source-view.mod-cm6 .cm-table-widget .table-wrapper, .markdown-rendered table) .table-col-btn {
+    border-top-right-radius: var(--table-radius);
+    border-bottom-right-radius: var(--table-radius);
+    color: var(--table-btn-color);
+  }
+  :is(.markdown-source-view.mod-cm6 .cm-table-widget .table-wrapper, .markdown-rendered table) .table-row-btn {
+    border-bottom-left-radius: var(--table-radius);
+    border-bottom-right-radius: var(--table-radius);
+    color: var(--table-btn-color);
+  }
+  :is(.markdown-source-view.mod-cm6 .cm-table-widget .table-wrapper, .markdown-rendered table) :is(.table-col-btn, .table-row-btn, .table-col-drag-handle:hover, .table-row-drag-handle:hover) {
+    transition: var(--animation);
+    background-color: var(--table-btn-bg);
+    --table-drag-handle-color: var(--table-btn-color);
+  }
+  :is(.markdown-source-view.mod-cm6 .cm-table-widget .table-wrapper, .markdown-rendered table) :is(tr:hover .table-row-drag-handle, th:hover .table-col-drag-handle) {
+    opacity: 1;
+  }
+  :is(.markdown-source-view.mod-cm6 .cm-table-widget .table-wrapper, .markdown-rendered table) th:first-child:not(:has(:is(.table-row-drag-handle, .table-col-drag-handle):hover)) {
+    border-top-left-radius: var(--table-radius);
+  }
+  :is(.markdown-source-view.mod-cm6 .cm-table-widget .table-wrapper, .markdown-rendered table) th:last-child:not(:has(.table-col-drag-handle:hover)) {
+    border-top-right-radius: var(--table-radius);
+  }
+  :is(.markdown-source-view.mod-cm6 .cm-table-widget .table-wrapper, .markdown-rendered table):has(.table-col-btn:hover) th:last-child {
+    border-top-right-radius: 0;
+  }
+  :is(.markdown-source-view.mod-cm6 .cm-table-widget .table-wrapper, .markdown-rendered table) tr:last-child td:first-child {
+    border-bottom-left-radius: var(--table-radius);
+  }
+  :is(.markdown-source-view.mod-cm6 .cm-table-widget .table-wrapper, .markdown-rendered table):has(.table-row-btn:hover) tr:last-child td:first-child {
+    border-bottom-left-radius: 0;
+  }
+  :is(.markdown-source-view.mod-cm6 .cm-table-widget .table-wrapper, .markdown-rendered table) tr:last-child td:last-child {
+    border-bottom-right-radius: var(--table-radius);
+  }
+  :is(.markdown-source-view.mod-cm6 .cm-table-widget .table-wrapper, .markdown-rendered table):has(:is(.table-col-btn, .table-row-btn):hover) tr:last-child td:last-child {
+    border-bottom-right-radius: 0;
+  }
+  :is(.markdown-source-view.mod-cm6 .cm-table-widget .table-wrapper, .markdown-rendered table) :is(th, td):not(:first-child) {
+    border-left: 0;
+  }
+  :is(.markdown-source-view.mod-cm6 .cm-table-widget .table-wrapper, .markdown-rendered table) tbody td {
+    border-top: 0;
+  }
+  :is(.markdown-source-view.mod-cm6 .cm-table-widget .table-wrapper, .markdown-rendered table) thead tr {
+    background-color: var(--table-header-bg);
+  }
+  :is(.markdown-source-view.mod-cm6 .cm-table-widget .table-wrapper, .markdown-rendered table) tbody tr:nth-of-type(2n) {
+    background-color: var(--table-alt-line-bg);
+  }
+  :is(.markdown-source-view.mod-cm6 .cm-table-widget .table-wrapper, .markdown-rendered table) tbody tr:nth-of-type(2n+1) {
+    background-color: var(--background-primary);
+  }
+
+  :is(.markdown-source-view.mod-cm6 .cm-table-widget .table-wrapper, .markdown-rendered table) :is(th, td) {
+    /* 通过 padding 调整单元格大小 */
+    padding: 8px 0px;  /* 上下12px，左右8px */
+}
+```
+
+## 待定
