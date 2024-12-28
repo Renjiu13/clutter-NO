@@ -1,112 +1,98 @@
-version: "3.8"  
 
-services:  
-# Aria2-Pro服务配置
- aria2-pro:
-   # 设置容器名称
-   container_name: aria2-pro            
-   # 指定使用的镜像
-   image: p3terx/aria2-pro             
-   environment:
-     # 设置进程用户ID（root）
-     - PUID=0                          
-     # 设置进程组ID（root）
-     - PGID=0                          
-     # 设置新建文件的权限掩码
-     - UMASK_SET=022                   
-     # 设置RPC访问密钥，建议修改为更复杂的密码
-     - RPC_SECRET=123456               
-     # 设置RPC服务端口
-     - RPC_PORT=6800                   
-     # 设置BT/DHT监听端口
-     - LISTEN_PORT=6888                
-     # 设置磁盘缓存大小
-     - DISK_CACHE=64M                  
-     # 是否启用IPv6模式
-     - IPV6_MODE=false                 
-     # 是否自动更新BT服务器
-     - UPDATE_TRACKERS=true            
-     # 可选的自定义Tracker服务器URL
-     - CUSTOM_TRACKER_URL=             
-     # 设置容器时区
-     - TZ=Asia/Shanghai                
-     # 启用rclone集成模式
-     - SPECIAL_MODE=rclone             
-   volumes:
-     # 挂载配置文件目录
-     - ./aria2-config:/config          
-     # 挂载下载文件存储目录
-     - /mnt/data/alist:/downloads      
-     # 与Alist共享的临时目录
-     - /mnt/data/alist:/opt/alist/data/temp  
-   # 使用主机网络模式，方便直接使用主机端口
-   network_mode: host                  
-   # 容器异常退出时自动重启
-   restart: unless-stopped             
-   # 设置日志相关配置
-   logging:                            
-     driver: json-file
-     options:
-       max-size: 1m                    
+# 随机生成一个密码
+# docker exec -it alist ./alist admin random
+# 手动设置一个密码,`NEW_PASSWORD`是指你需要设置的密码
+# docker exec -it alist ./alist admin set NEW_PASSWORD
 
-# AriaNg Web界面服务配置
- ariang:
-   # 设置容器名称
-   container_name: ariang              
-   # 指定使用的镜像
-   image: p3terx/ariang               
-   # 设置启动参数：指定端口和IPv6支持
-   command: --port 6880 --ipv6        
-   # 使用主机网络模式
-   network_mode: host                 
-   # 容器异常退出时自动重启
-   restart: unless-stopped            
-   # 设置日志相关配置
-   logging:                           
-     driver: json-file
-     options:
-       max-size: 1m                   
+# 记得给alist文件夹及子目录读写权限
 
-# qBittorrent服务配置
- qbittorrent:
-   # 指定使用的镜像
-   image: lscr.io/linuxserver/qbittorrent:latest  
-   # 设置容器名称
-   container_name: qbittorrent        
-   environment:
-     # 设置进程用户ID（root）
-     - PUID=0                        
-     # 设置进程组ID（root）
-     - PGID=0                        
-     # 设置容器时区
-     - TZ=Asia/Shanghai              
-     # 设置Web界面端口
-     - WEBUI_PORT=8080              
-     # 设置BT传输端口
-     - TORRENTING_PORT=6881         
-   volumes:
-     # 挂载配置文件目录
-     - ./qbittorrent-config:/config  
-     # 挂载下载文件存储目录
-     - /mnt/data/alist:/downloads    
-     # 与Alist共享的临时目录
-     - /mnt/data/alist:/opt/alist/data/temp  
-   ports:
-     # Web管理界面端口映射
-     - 8080:8080                    
-     # BT数据传输TCP端口映射
-     - 6881:6881                    
-     # BT数据传输UDP端口映射
-     - 6881:6881/udp                
-   # 容器异常退出时自动重启
-   restart: unless-stopped          
-   # 设置日志相关配置
-   logging:                         
-     driver: json-file
-     options:
-       max-size: 1m                 
 
-# 重要提示：
-# 1. 确保 /mnt/data/alist 目录已创建且有正确的读写权限
-# 2. qBittorrent首次登录信息：用户名admin 密码adminadmin
-# 3. Aria2 RPC密钥默认为123456，建议修改为更安全的密码
+version: "3.8"
+
+services:
+  # Alist 配置
+  alist:
+    container_name: alist
+    image: xhofe/alist:latest
+    restart: unless-stopped
+    environment:
+      - PUID=0     # 使用 root 用户ID
+      - PGID=0     # 使用 root 组ID
+      - UMASK=022  # 建议为022
+    volumes:
+      # Alist数据映射
+      - ./etc/alist:/opt/alist/data
+      # 与Aria2共享下载目录
+      - /mnt/data/alist:/opt/alist/data/temp
+    ports:
+      # 宿主机5233端口映射到容器5244端口
+      - "5233:5244"
+  
+  # Aria2-Pro 配置  
+  aria2-pro:  
+    container_name: aria2-pro  
+    image: p3terx/aria2-pro  
+    environment:  
+      # 用户和组ID配置，对应无特权用户nobody  
+      - PUID=0  
+      - PGID=0
+      - UMASK_SET=022  
+      # RPC认证与端口设置  
+      - RPC_SECRET=123456   # 访问密码  
+      - RPC_PORT=6800  
+      - LISTEN_PORT=6888  
+      # 缓存与网络配置  
+      - DISK_CACHE=64M  
+      - IPV6_MODE=false  
+      # 追踪器与时间区域  
+      - UPDATE_TRACKERS=true  
+      - CUSTOM_TRACKER_URL=  
+      - TZ=Asia/Shanghai  
+      # 特殊模式：rclone集成  
+      - SPECIAL_MODE=rclone  
+    volumes:  
+      # 配置与下载目录映射  
+      - ./aria2-config:/config  
+      - /mnt/data/alist:/downloads  
+      # Alist与Aria2的临时下载路径共享  
+      - /mnt/data/alist:/opt/alist/data/temp
+    # 网络模式设定，默认为主机模式以简化IPv6配置  
+    network_mode: host  
+    restart: unless-stopped  
+    logging:  
+      driver: json-file  
+      options:  
+        max-size: 1m  
+  
+  # AriaNg 配置  
+  ariang:  
+    container_name: ariang  
+    image: p3terx/ariang  
+    command: --port 6880 --ipv6  
+    network_mode: host  
+    restart: unless-stopped  
+    logging:  
+      driver: json-file  
+      options:  
+        max-size: 1m  
+        
+  # qBittorrent配置
+  qbittorrent:
+    image: lscr.io/linuxserver/qbittorrent:latest
+    container_name: qbittorrent
+    environment:
+      - PUID=0  # 使用 root 用户ID
+      - PGID=0  # 使用 root 组ID
+      - TZ=Etc/UTC  # 设置时区为UTC
+      - WEBUI_PORT=8080  # Web界面端口
+      - TORRENTING_PORT=6881  # 下载端口
+    volumes:
+      - ./config:/config
+      - /mnt/data/alist:/downloads
+      # 与Alist共享下载目录
+      - /mnt/data/alist:/opt/alist/data/temp
+    ports:
+      - 8080:8080
+      - 6881:6881
+      - 6881:6881/udp
+    restart: unless-stopped
