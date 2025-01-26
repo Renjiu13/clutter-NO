@@ -1,98 +1,126 @@
-
 # 随机生成一个密码
 # docker exec -it alist ./alist admin random
 # 手动设置一个密码,`NEW_PASSWORD`是指你需要设置的密码
 # docker exec -it alist ./alist admin set NEW_PASSWORD
 
-# 记得给alist文件夹及子目录读写权限
+# 设置目录权限 
+# chmod -R 755 /mnt/usb
 
-
+# Docker Compose 文件版本
 version: "3.8"
 
 services:
-  # Alist 配置
+  # Alist 网盘服务
   alist:
-    container_name: alist
+    # 使用最新版 Alist 镜像
     image: xhofe/alist:latest
-    restart: unless-stopped
-    environment:
-      - PUID=0     # 使用 root 用户ID
-      - PGID=0     # 使用 root 组ID
-      - UMASK=022  # 建议为022
-    volumes:
-      # Alist数据映射
-      - ./etc/alist:/opt/alist/data
-      # 与Aria2共享下载目录
-      - /mnt/data/alist:/opt/alist/data/temp
+    # 容器名称
+    container_name: alist
+    # 端口映射：宿主机5244端口映射到容器5244端口
     ports:
-      # 宿主机5233端口映射到容器5244端口
-      - "5233:5244"
-  
-  # Aria2-Pro 配置  
-  aria2-pro:  
-    container_name: aria2-pro  
-    image: p3terx/aria2-pro  
-    environment:  
-      # 用户和组ID配置，对应无特权用户nobody  
-      - PUID=0  
+      - 5233:5244
+    # 容器运行环境配置
+    environment:
+      # 用户ID和组ID设置，0表示root用户
+      - PUID=0
       - PGID=0
-      - UMASK_SET=022  
-      # RPC认证与端口设置  
-      - RPC_SECRET=123456   # 访问密码  
-      - RPC_PORT=6800  
-      - LISTEN_PORT=6888  
-      # 缓存与网络配置  
-      - DISK_CACHE=64M  
-      - IPV6_MODE=false  
-      # 追踪器与时间区域  
-      - UPDATE_TRACKERS=true  
-      - CUSTOM_TRACKER_URL=  
-      - TZ=Asia/Shanghai  
-      # 特殊模式：rclone集成  
-      - SPECIAL_MODE=rclone  
-    volumes:  
-      # 配置与下载目录映射  
-      - ./aria2-config:/config  
-      - /mnt/data/alist:/downloads  
-      # Alist与Aria2的临时下载路径共享  
-      - /mnt/data/alist:/opt/alist/data/temp
-    # 网络模式设定，默认为主机模式以简化IPv6配置  
-    network_mode: host  
-    restart: unless-stopped  
-    logging:  
-      driver: json-file  
-      options:  
-        max-size: 1m  
-  
-  # AriaNg 配置  
-  ariang:  
-    container_name: ariang  
-    image: p3terx/ariang  
-    command: --port 6880 --ipv6  
-    network_mode: host  
-    restart: unless-stopped  
-    logging:  
-      driver: json-file  
-      options:  
-        max-size: 1m  
-        
-  # qBittorrent配置
-  qbittorrent:
-    image: lscr.io/linuxserver/qbittorrent:latest
-    container_name: qbittorrent
-    environment:
-      - PUID=0  # 使用 root 用户ID
-      - PGID=0  # 使用 root 组ID
-      - TZ=Etc/UTC  # 设置时区为UTC
-      - WEBUI_PORT=8080  # Web界面端口
-      - TORRENTING_PORT=6881  # 下载端口
+      # 文件权限掩码
+      - UMASK=022
+    # 总是重启
+    restart: always
+    # 挂载卷配置
     volumes:
-      - ./config:/config
-      - /mnt/data/alist:/downloads
-      # 与Alist共享下载目录
-      - /mnt/data/alist:/opt/alist/data/temp
+      # Alist 数据目录
+      - /mnt/usb/alist/data:/opt/alist/data
+      # Aria2 临时文件目录
+      - /mnt/usb/aria2/temp/aria2:/opt/alist/data/temp/aria2
+      # 下载目录
+      - /mnt/usb/aria2/temp/downloads:/downloads
+      # 网盘根目录
+      - /mnt/usb:/nas
+    # 依赖 aria2-pro 服务，确保 aria2 先启动
+    depends_on:
+      aria2-pro:
+        condition: "service_healthy"
+
+  # Aria2 下载服务
+  aria2-pro:
+    container_name: aria2-pro
+    # 使用 Aria2 Pro 镜像
+    image: p3terx/aria2-pro
+    # 运行环境配置
+    environment:
+      - PUID=0
+      - PGID=0
+      - UMASK_SET=022
+      # RPC 密钥，用于连接验证
+      - RPC_SECRET=123456
+      # RPC 端口
+      - RPC_PORT=6800
+      # 监听端口
+      - LISTEN_PORT=6888
+      # 磁盘缓存大小
+      - DISK_CACHE=64M
+      # IPv6 模式
+      - IPV6_MODE=false
+      # 自动更新 Tracker
+      - UPDATE_TRACKERS=true
+      # 时区
+      - TZ=Asia/Shanghai
+      # 特殊模式：下载完成后自动移动文件
+      - SPECIAL_MODE=move
+    # 数据卷挂载
+    volumes:
+      # Aria2 配置目录
+      - /mnt/usb/aria2/config:/config
+      # Aria2 临时文件目录
+      - /mnt/usb/aria2/temp/aria2:/opt/alist/data/temp/aria2
+      # 下载临时目录
+      - /mnt/usb/aria2/temp/downloads:/downloads
+      # 下载完成目录
+      - /mnt/usb/downloads:/completed
+    # 端口映射
     ports:
-      - 8080:8080
-      - 6881:6881
-      - 6881:6881/udp
+      # RPC 端口
+      - 6800:6800
+      # 下载监听端口（TCP）
+      - 6888:6888
+      # 下载监听端口（UDP）
+      - 6888:6888/udp
+    # 除非手动停止，否则始终重启
     restart: unless-stopped
+    # 日志配置
+    logging:
+      driver: json-file
+      options:
+        # 日志文件最大1M
+        max-size: 1m
+    # 健康检查
+    healthcheck:
+      # 通过 curl 检查 Aria2 RPC 服务是否正常
+      test: ["CMD-SHELL", "curl -s -f -X POST -H 'Content-Type: application/json' -d '{\"jsonrpc\":\"2.0\",\"id\":\"1\",\"method\":\"aria2.getVersion\",\"params\":[\"token:'$ARIA2_RPC_SECRET'\"]}' http://localhost:6800/jsonrpc || exit 1"]
+      # 检查间隔
+      interval: 30s
+      # 超时时间
+      timeout: 10s
+      # 重试次数
+      retries: 3
+
+  # AriaNg Web 管理界面
+  ariang:
+    container_name: ariang
+    # AriaNg 镜像
+    image: p3terx/ariang
+    # 启动命令，指定端口和 IPv6
+    command: --port 6880 --ipv6
+    # 端口映射
+    ports:
+      - 6880:6880
+    # 除非手动停止，否则始终重启
+    restart: unless-stopped
+    # 日志配置
+    logging:
+      driver: json-file
+      options:
+        # 日志文件最大1M
+        max-size: 1m
