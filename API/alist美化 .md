@@ -15,6 +15,16 @@
 body {
     font-family: 'LXGW WenKai', sans-serif; /* 确保 body 元素使用相同字体 */
 }
+
+/* 隐藏搜索栏文字 */
+kbd.hope-kbd.hope-c-iDYHca.hope-c-PJLV.hope-c-PJLV-ijhzIfm-css {
+    display: none;
+}
+
+/* 隐藏右上角列表切换按钮 */
+.hope-menu__trigger.hope-c-bvjbhC.hope-c-PJLV.hope-c-PJLV-ieTGfmR-css {
+    display: none;
+}
 </style>
 ```
 
@@ -173,6 +183,16 @@ body {
 
 .state {
     margin-top: 20px;
+}
+
+/* 隐藏搜索栏文字 */
+kbd.hope-kbd.hope-c-iDYHca.hope-c-PJLV.hope-c-PJLV-ijhzIfm-css {
+    display: none;
+}
+
+/* 隐藏右上角列表切换按钮 */
+.hope-menu__trigger.hope-c-bvjbhC.hope-c-PJLV.hope-c-PJLV-ieTGfmR-css {
+    display: none;
 }
 </style>
 ```
