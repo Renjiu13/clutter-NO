@@ -255,7 +255,107 @@ kbd.hope-kbd.hope-c-iDYHca.hope-c-PJLV.hope-c-PJLV-ijhzIfm-css {
 </script>
 ```
 
+#### 再次优化
 
+```
+<div id="customize" style="display: none; font-size: 15px; text-align: center;">
+    <div>
+        <!-- 底部导航链接部分 -->
+        <div style="font-weight: bold;">
+            <span class="nav-item">
+                <a class="nav-link" href="mailto:952903798@qq.com" target="_blank">
+                    <i class="fa-duotone fa-envelope-open" style="color:#409EFF" aria-hidden="true"></i>
+                    邮箱 |
+                </a>
+            </span>
+            <span class="nav-item">
+                <a class="nav-link" href="https://roswe.rf.gd/" target="_blank">
+                    <i class="fas fa-edit" style="color:#409EFF" aria-hidden="true"></i>
+                    博客 |
+                </a>
+            </span>
+            <span class="nav-item">
+                <a class="nav-link" href="/@manage" target="_blank">
+                    <i class="fa-solid fa-folder-gear" style="color:#409EFF" aria-hidden="true"></i>
+                    管理 |
+                </a>
+            </span>
+        </div>
+        <br />
+
+        <!-- 一言 API 部分 -->
+        <div style="line-height: 20px; font-weight: bold;">
+            <span>
+                "<span id="hitokoto_container">
+                    <a href="#" id="hitokoto_text" style="color: rgb(13, 109, 252); font-weight: bold; text-decoration: none;">加载中...</a>
+                </span>"
+            </span>
+        </div>
+    </div>
+</div>
+
+<script>
+const APIs = [
+    {
+        url: 'https://v1.hitokoto.cn',
+        parse: data => data.hitokoto
+    },
+    {
+        url: 'https://api.uomg.com/api/comments.163',
+        parse: data => data.data.content
+    },
+    {
+        url: 'https://api.oick.cn/yiyan/api.php',
+        parse: data => typeof data === 'string' ? data : data.text
+    }
+];
+
+const fetchHitokoto = async () => {
+    const hitokoto = document.getElementById('hitokoto_text');
+    
+    // 随机选择一个API
+    const api = APIs[Math.floor(Math.random() * APIs.length)];
+    
+    try {
+        const response = await fetch(api.url);
+        const data = await response.json();
+        const text = api.parse(data);
+        
+        hitokoto.href = `https://www.bing.com/search?q=${encodeURIComponent(text)}`;
+        hitokoto.innerText = text;
+    } catch (error) {
+        console.error('Failed to fetch from ' + api.url + ', trying next API...');
+        // 如果当前API失败，递归尝试下一个
+        fetchHitokoto();
+    }
+};
+
+// 延迟加载定制内容
+let interval = setInterval(() => {
+    if (document.querySelector(".footer")) {
+        document.querySelector("#customize").style.display = "";
+        fetchHitokoto();
+        clearInterval(interval);
+    }
+}, 200);
+
+// 点击重新加载一言
+document.getElementById('hitokoto_text').onclick = (e) => {
+    e.preventDefault();
+    fetchHitokoto();
+};
+</script>
+
+<style>
+#hitokoto_text {
+    transition: opacity 0.3s ease;
+}
+#hitokoto_text:hover {
+    opacity: 0.8;
+    text-decoration: underline !important;
+}
+</style>
+```
 ### 收集的，上方为优化的
 
 ```
