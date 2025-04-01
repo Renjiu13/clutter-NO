@@ -4,4 +4,6 @@
 
 ---
 
-![主页面图](http://tuchuang.tttttttttt.top/images/2)
+![主页面图](https://api.neix.in/random)
+
+
