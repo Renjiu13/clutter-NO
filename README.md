@@ -4,6 +4,6 @@
 
 ---
 
-![主页面图](http://tuchuang.tttttttttt.top/api.php)
+![主页面图](http://tuchuang.tttttttttt.top/api.php?i=1)
 
 
