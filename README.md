@@ -4,6 +4,6 @@
 
 ---
 
-![主页面图](https://api.neix.in/random)
+![主页面图](http://tuchuang.tttttttttt.top/api.php)
 
 
