@@ -4,6 +4,6 @@
 
 ---
 
-![主页面图](http://tuchuang.tttttttttt.top/api.php?i=1)
+![主页面图](https://markdown.rf.gd/images/1)
 
 
