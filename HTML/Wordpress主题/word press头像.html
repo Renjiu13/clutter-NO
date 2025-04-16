@@ -1,109 +1,97 @@
 <div class="custom-sidebar-widget">
-	<!-- 头像和个性签名 -->
-	<div class="profile-container">
-		<div class="avatar-container">
-			<img src="https://img.accdu.cloudns.org/file/1742720411212_头像.jpg" alt="头像" class="profile-avatar">
-		</div>
-		<div class="profile-motto">
-			To be a better man.
-		</div>
-	</div>
-	
-	<!-- 联系方式 -->
-	<div class="contact-container">
-		<a href="mailto:您的邮箱@example.com" class="contact-icon email-icon" title="邮箱">
-			<span class="icon-text">✉</span>
-		</a>
-		<a href="https://github.com/您的GitHub用户名" class="contact-icon github-icon" title="GitHub">
-			<span class="icon-text">G</span>
-		</a>
-		<a href="https://weibo.com/您的微博用户名" class="contact-icon weibo-icon" title="微博">
-			<span class="icon-text">W</span>
-		</a>
-	</div>
+    <!-- 头像和个性签名 -->
+    <div class="profile-container">
+        <div class="avatar-container">
+            <img src="https://img.accdu.cloudns.org/file/1742720411212_头像.jpg" alt="头像" class="profile-avatar">
+        </div>
+        <div class="profile-motto">To be a better man.</div>
+    </div>
+
+    <!-- 联系方式 -->
+    <div class="contact-container">
+        <a href="mailto:您的邮箱@example.com" class="contact-icon email-icon" title="邮箱">
+            <i class="fa-regular fa-envelope"></i>
+        </a>
+        <a href="https://github.com/您的GitHub用户名" class="contact-icon github-icon" title="GitHub">
+            <i class="fa-brands fa-github"></i>
+        </a>
+        <a href="https://weibo.com/您的微博用户名" class="contact-icon weibo-icon" title="微博">
+            <i class="fa-brands fa-weibo"></i>
+        </a>
+    </div>
 </div>
 
 <style>
-.custom-sidebar-widget {
-	background-color: #fff;
-	border-radius: 5px;
-	padding: 12px;
-	margin-bottom: 15px;
-	box-shadow: 0 1px 2px rgba(0,0,0,0.08);
-	max-width: 85%;
-	margin-left: auto;
-	margin-right: auto;
-}
+    /* 主容器样式 */
+    .custom-sidebar-widget {
+        background-color: #fff;
+        border-radius: 5px;
+        padding: 12px;
+        margin-bottom: 15px;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+        max-width: 85%;
+        margin-left: auto;
+        margin-right: auto;
+    }
 
-/* 头像和个性签名样式 */
-.profile-container {
-	text-align: center;
-	margin-bottom: 15px;
-}
+    /* 头像和个性签名样式 */
+    .profile-container {
+        text-align: center;
+        margin-bottom: 15px;
+    }
 
-.avatar-container {
-	margin-bottom: 8px;
-	position: relative;
-	display: inline-block;
-}
+    .avatar-container {
+        margin-bottom: 8px;
+        position: relative;
+        display: inline-block;
+    }
 
-.profile-avatar {
-	width: 80px;
-	height: 80px;
-	border-radius: 50%;
-	object-fit: cover;
-	border: 3px solid #ffffff; /* 调整描边厚度为3px */
-	box-shadow: 0 8px 20px rgba(0,0,0,0.3), 0 0 0 2px rgba(0,0,0,0.1); /* 保持投影效果 */
-}
+    .profile-avatar {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid #ffffff;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3), 0 0 0 2px rgba(0, 0, 0, 0.1);
+    }
 
-.profile-motto {
-	font-size: 13px;
-	color: #666;
-	margin-top: 12px;
-	font-style: italic;
-}
+    .profile-motto {
+        font-size: 13px;
+        color: #666;
+        margin-top: 12px;
+        font-style: italic;
+    }
 
-/* 联系方式样式 */
-.contact-container {
-	display: flex;
-	justify-content: center;
-	margin-top: 12px;
-}
+    /* 联系方式样式 */
+    .contact-container {
+        display: flex;
+        justify-content: center;
+        margin-top: 12px;
+        gap: 10px; /* 图标间距 */
+    }
 
-.contact-icon {
-	display: inline-block;
-	width: 32px;
-	height: 32px;
-	line-height: 32px;
-	text-align: center;
-	margin: 0 6px;
-	border-radius: 50%;
-	background-color: #f5f5f5;
-	color: #666;
-	text-decoration: none;
-	transition: all 0.3s ease;
-	font-weight: bold;
-}
+    .contact-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: #f5f5f5; /* 默认背景为浅灰色 */
+        color: #000; /* 默认图标为黑色 */
+        text-decoration: none;
+        transition: all 0.3s ease;
+        font-size: 16px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
 
-.icon-text {
-	font-size: 15px;
-}
-
-.contact-icon:hover {
-	background-color: #e0e0e0;
-	color: #333;
-	transform: translateY(-2px);
-}
-
-.email-icon:hover {
-	color: #d44638;
-}
-
-.github-icon:hover {
-	color: #333;
-}
-
-.weibo-icon:hover {
-	color: #e6162d;
-}
+    .contact-icon:hover {
+        background-color: #333; /* 悬停时背景变为深灰色 */
+        color: #fff; /* 悬停时图标变为白色 */
+        transform: scale(1.1); /* 悬停时放大 */
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* 增加阴影 */
+    }
 </style>
+
+<!-- 引入 Font Awesome 图标库 -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
