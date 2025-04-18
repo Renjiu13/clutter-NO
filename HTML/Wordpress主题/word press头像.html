@@ -1,4 +1,6 @@
 <div class="custom-sidebar-widget">
+    <!-- 右上角隐藏点击区域 -->
+    <div class="admin-login-trigger"></div>
     <!-- 头像和个性签名 -->
     <div class="profile-container">
         <div class="avatar-container">
@@ -9,8 +11,8 @@
 
     <!-- 联系方式 -->
     <div class="contact-container">
-        <a href="mailto:您的邮箱@example.com" class="contact-icon email-icon" title="邮箱">
-            <i class="fa-regular fa-envelope"></i>
+        <a href="https://wpa.qq.com/msgrd?v=3&uin=你的QQ号&site=qq&menu=yes" class="contact-icon qq-icon" title="QQ">
+            <i class="fa-brands fa-qq"></i>
         </a>
         <a href="https://github.com/您的GitHub用户名" class="contact-icon github-icon" title="GitHub">
             <i class="fa-brands fa-github"></i>
@@ -95,3 +97,25 @@
 
 <!-- 引入 Font Awesome 图标库 -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<script>
+    (function() {
+        var avatar = document.querySelector('.profile-avatar');
+        var clickCount = 0;
+        var timer = null;
+        var adminPath = '/?login'; // 只需修改此处
+        avatar.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            clickCount++;
+            if (timer) clearTimeout(timer);
+            timer = setTimeout(function() {
+                clickCount = 0;
+            }, 1200);
+            if (clickCount === 4) {
+                window.open(window.location.origin + adminPath, '_blank');
+                clickCount = 0;
+            }
+        });
+    })();
+</script>
