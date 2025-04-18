@@ -1,23 +1,42 @@
+<!-- ================== 变量配置区 ================== -->
+<script>
+    // 头像图片地址
+    var AVATAR_URL = "https://img.accdu.cloudns.org/file/1742720411212_头像.jpg";
+    // 个性签名
+    var PROFILE_MOTTO = "To be a better man.";
+    // QQ号
+    var QQ_NUMBER = "566545656555456";
+    // GitHub用户名
+    var GITHUB_USERNAME = "renjiu13";
+    // 微博主页链接
+    var WEIBO_URL = "https://www.weibo.com/u/777";
+    // 后台入口路径
+    var ADMIN_PATH = "/login.php";
+</script>
+
 <div class="custom-sidebar-widget">
-    <!-- 右上角隐藏点击区域 -->
-    <div class="admin-login-trigger"></div>
-    <!-- 头像和个性签名 -->
+    <!-- 头像和个性签名区域 -->
     <div class="profile-container">
         <div class="avatar-container">
-            <img src="https://img.accdu.cloudns.org/file/1742720411212_头像.jpg" alt="头像" class="profile-avatar">
+            <!-- 头像图片，点击可触发后台入口跳转 -->
+            <img id="profile-avatar" src="https://img.accdu.cloudns.org/file/1742720411212_头像.jpg" alt="头像" class="profile-avatar">
         </div>
-        <div class="profile-motto">To be a better man.</div>
+        <!-- 个性签名 -->
+        <div id="profile-motto" class="profile-motto"></div>
     </div>
 
-    <!-- 联系方式 -->
+    <!-- 联系方式区域 -->
     <div class="contact-container">
-        <a href="https://wpa.qq.com/msgrd?v=3&uin=你的QQ号&site=qq&menu=yes" class="contact-icon qq-icon" title="QQ">
+        <!-- QQ 联系方式 -->
+        <a id="qq-link" href="#" class="contact-icon qq-icon" title="QQ">
             <i class="fa-brands fa-qq"></i>
         </a>
-        <a href="https://github.com/您的GitHub用户名" class="contact-icon github-icon" title="GitHub">
+        <!-- GitHub 联系方式 -->
+        <a id="github-link" href="#" class="contact-icon github-icon" title="GitHub">
             <i class="fa-brands fa-github"></i>
         </a>
-        <a href="https://weibo.com/您的微博用户名" class="contact-icon weibo-icon" title="微博">
+        <!-- 微博 联系方式 -->
+        <a id="weibo-link" href="#" class="contact-icon weibo-icon" title="微博">
             <i class="fa-brands fa-weibo"></i>
         </a>
     </div>
@@ -36,18 +55,20 @@
         margin-right: auto;
     }
 
-    /* 头像和个性签名样式 */
+    /* 头像和签名整体居中 */
     .profile-container {
         text-align: center;
         margin-bottom: 15px;
     }
 
+    /* 头像容器样式 */
     .avatar-container {
         margin-bottom: 8px;
         position: relative;
         display: inline-block;
     }
 
+    /* 头像图片样式 */
     .profile-avatar {
         width: 80px;
         height: 80px;
@@ -55,8 +76,10 @@
         object-fit: cover;
         border: 3px solid #ffffff;
         box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3), 0 0 0 2px rgba(0, 0, 0, 0.1);
+        cursor: pointer; /* 鼠标悬停变为手型，提示可点击 */
     }
 
+    /* 个性签名样式 */
     .profile-motto {
         font-size: 13px;
         color: #666;
@@ -64,7 +87,7 @@
         font-style: italic;
     }
 
-    /* 联系方式样式 */
+    /* 联系方式区域样式 */
     .contact-container {
         display: flex;
         justify-content: center;
@@ -72,6 +95,7 @@
         gap: 10px; /* 图标间距 */
     }
 
+    /* 联系方式图标样式 */
     .contact-icon {
         display: flex;
         align-items: center;
@@ -87,6 +111,7 @@
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     }
 
+    /* 联系方式图标悬停效果 */
     .contact-icon:hover {
         background-color: #333; /* 悬停时背景变为深灰色 */
         color: #fff; /* 悬停时图标变为白色 */
@@ -94,16 +119,25 @@
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* 增加阴影 */
     }
 </style>
-
 <!-- 引入 Font Awesome 图标库 -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 <script>
+    // ================== 动态填充内容和事件绑定 ==================
+    // 设置头像图片和签名
+    document.getElementById('profile-avatar').src = AVATAR_URL;
+    document.getElementById('profile-motto').textContent = PROFILE_MOTTO;
+
+    // 设置QQ、GitHub、微博链接
+    document.getElementById('qq-link').href = "https://wpa.qq.com/msgrd?v=3&uin=" + QQ_NUMBER + "&site=qq&menu=yes";
+    document.getElementById('github-link').href = "https://github.com/" + GITHUB_USERNAME;
+    document.getElementById('weibo-link').href = WEIBO_URL;
+
+    // 头像多次点击跳转后台入口
     (function() {
-        var avatar = document.querySelector('.profile-avatar');
+        var avatar = document.getElementById('profile-avatar');
         var clickCount = 0;
         var timer = null;
-        var adminPath = '/?login'; // 只需修改此处
         avatar.addEventListener('click', function(e) {
             e.preventDefault();
             e.stopPropagation();
@@ -111,9 +145,9 @@
             if (timer) clearTimeout(timer);
             timer = setTimeout(function() {
                 clickCount = 0;
-            }, 1200);
+            }, 1200); // 1.2秒内连续点击
             if (clickCount === 4) {
-                window.open(window.location.origin + adminPath, '_blank');
+                window.open(window.location.origin + ADMIN_PATH, '_blank');
                 clickCount = 0;
             }
         });
