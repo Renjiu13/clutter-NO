@@ -1,155 +1,205 @@
-<!-- ================== 变量配置区 ================== -->
+<!-- ================== WordPress 个人资料卡片小工具 ================== -->
+<!-- 
+  功能说明：
+  1. 显示个人头像和座右铭
+  2. 提供社交媒体链接（QQ群、GitHub、微博）
+  3. 支持头像快速点击进入管理后台
+  4. 响应式设计，适配移动端
+-->
+
+<!-- 配置信息 -->
 <script>
-    // 头像图片地址
-    var AVATAR_URL = "https://img.accdu.cloudns.org/file/1742720411212_头像.jpg";
-    // 个性签名
-    var PROFILE_MOTTO = "To be a better man.";
-    // QQ号
-    var QQ_NUMBER = "566545656555456";
-    // GitHub用户名
-    var GITHUB_USERNAME = "renjiu13";
-    // 微博主页链接
-    var WEIBO_URL = "https://www.weibo.com/u/777";
-    // 后台入口路径
-    var ADMIN_PATH = "/login.php";
-</script>
-
-<div class="custom-sidebar-widget">
-    <!-- 头像和个性签名区域 -->
-    <div class="profile-container">
+    const CONFIG = {
+      avatar: {
+        url: "https://img.accdu.cloudns.org/file/1742720411212_头像.jpg",
+        adminPath: "/login",
+        clickThreshold: 4,    // 点击次数阈值
+        clickTimeout: 1200    // 点击超时时间(ms)
+      },
+      profile: {
+        motto: "To be a better man."
+      },
+      social: {
+        qqGroup: "https://qm.qq.com/q/DpH0DM5gUU",
+        github: "renjiu13",
+        weibo: "https://www.weibo.com/u/777"
+      }
+    };
+    </script>
+    
+    <!-- 个人资料卡片结构 -->
+    <div class="custom-sidebar-widget">
+      <div class="profile-container">
         <div class="avatar-container">
-            <!-- 头像图片，点击可触发后台入口跳转 -->
-            <img id="profile-avatar" src="https://img.accdu.cloudns.org/file/1742720411212_头像.jpg" alt="头像" class="profile-avatar">
+          <img id="profile-avatar"
+               src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
+               alt="个人头像"
+               class="profile-avatar"
+               loading="lazy">
         </div>
-        <!-- 个性签名 -->
         <div id="profile-motto" class="profile-motto"></div>
+      </div>
+    
+      <!-- 社交媒体链接 -->
+      <div class="contact-container">
+        <a id="qq-link" href="#" class="contact-icon qq-icon" title="加入QQ群聊" rel="noopener noreferrer">
+          <i class="fa-brands fa-qq" aria-hidden="true"></i>
+        </a>
+        <a id="github-link" href="#" class="contact-icon github-icon" title="访问我的GitHub" rel="noopener noreferrer">
+          <i class="fa-brands fa-github" aria-hidden="true"></i>
+        </a>
+        <a id="weibo-link" href="#" class="contact-icon weibo-icon" title="访问我的微博" rel="noopener noreferrer">
+          <i class="fa-brands fa-weibo" aria-hidden="true"></i>
+        </a>
+      </div>
     </div>
-
-    <!-- 联系方式区域 -->
-    <div class="contact-container">
-        <!-- QQ 联系方式 -->
-        <a id="qq-link" href="#" class="contact-icon qq-icon" title="QQ">
-            <i class="fa-brands fa-qq"></i>
-        </a>
-        <!-- GitHub 联系方式 -->
-        <a id="github-link" href="#" class="contact-icon github-icon" title="GitHub">
-            <i class="fa-brands fa-github"></i>
-        </a>
-        <!-- 微博 联系方式 -->
-        <a id="weibo-link" href="#" class="contact-icon weibo-icon" title="微博">
-            <i class="fa-brands fa-weibo"></i>
-        </a>
-    </div>
-</div>
-
-<style>
-    /* 主容器样式 */
+    
+    <!-- 样式定义 -->
+    <style>
     .custom-sidebar-widget {
-        background-color: #fff;
-        border-radius: 5px;
-        padding: 12px;
-        margin-bottom: 15px;
-        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
-        max-width: 85%;
-        margin-left: auto;
-        margin-right: auto;
+      background-color: #fff;
+      border-radius: 8px;
+      padding: 16px;
+      margin: 0 auto 20px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      max-width: 85%;
+      transition: transform 0.3s ease;
     }
-
-    /* 头像和签名整体居中 */
+    
+    .custom-sidebar-widget:hover {
+      transform: translateY(-2px);
+    }
+    
     .profile-container {
-        text-align: center;
-        margin-bottom: 15px;
+      text-align: center;
+      margin-bottom: 20px;
     }
-
-    /* 头像容器样式 */
+    
     .avatar-container {
-        margin-bottom: 8px;
-        position: relative;
-        display: inline-block;
+      margin-bottom: 12px;
+      position: relative;
+      display: inline-block;
     }
-
-    /* 头像图片样式 */
+    
     .profile-avatar {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid #ffffff;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .profile-avatar:hover {
+      transform: scale(1.05);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+    }
+    
+    .profile-motto {
+      font-size: 14px;
+      color: #666;
+      margin-top: 12px;
+      font-style: italic;
+      line-height: 1.5;
+    }
+    
+    .contact-container {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-top: 15px;
+    }
+    
+    .contact-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background-color: #f8f9fa;
+      color: #333;
+      text-decoration: none;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      font-size: 18px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    }
+    
+    .contact-icon:hover {
+      background-color: #333;
+      color: #fff;
+      transform: translateY(-3px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+    
+    /* 响应式设计 */
+    @media (max-width: 768px) {
+      .custom-sidebar-widget {
+        max-width: 95%;
+        padding: 12px;
+      }
+      
+      .profile-avatar {
         width: 80px;
         height: 80px;
-        border-radius: 50%;
-        object-fit: cover;
-        border: 3px solid #ffffff;
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3), 0 0 0 2px rgba(0, 0, 0, 0.1);
-        cursor: pointer; /* 鼠标悬停变为手型，提示可点击 */
-    }
-
-    /* 个性签名样式 */
-    .profile-motto {
-        font-size: 13px;
-        color: #666;
-        margin-top: 12px;
-        font-style: italic;
-    }
-
-    /* 联系方式区域样式 */
-    .contact-container {
-        display: flex;
-        justify-content: center;
-        margin-top: 12px;
-        gap: 10px; /* 图标间距 */
-    }
-
-    /* 联系方式图标样式 */
-    .contact-icon {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        background-color: #f5f5f5; /* 默认背景为浅灰色 */
-        color: #000; /* 默认图标为黑色 */
-        text-decoration: none;
-        transition: all 0.3s ease;
+      }
+      
+      .contact-icon {
+        width: 38px;
+        height: 38px;
         font-size: 16px;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      }
     }
-
-    /* 联系方式图标悬停效果 */
-    .contact-icon:hover {
-        background-color: #333; /* 悬停时背景变为深灰色 */
-        color: #fff; /* 悬停时图标变为白色 */
-        transform: scale(1.1); /* 悬停时放大 */
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* 增加阴影 */
-    }
-</style>
-<!-- 引入 Font Awesome 图标库 -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-<script>
-    // ================== 动态填充内容和事件绑定 ==================
-    // 设置头像图片和签名
-    document.getElementById('profile-avatar').src = AVATAR_URL;
-    document.getElementById('profile-motto').textContent = PROFILE_MOTTO;
-
-    // 设置QQ、GitHub、微博链接
-    document.getElementById('qq-link').href = "https://wpa.qq.com/msgrd?v=3&uin=" + QQ_NUMBER + "&site=qq&menu=yes";
-    document.getElementById('github-link').href = "https://github.com/" + GITHUB_USERNAME;
-    document.getElementById('weibo-link').href = WEIBO_URL;
-
-    // 头像多次点击跳转后台入口
-    (function() {
-        var avatar = document.getElementById('profile-avatar');
-        var clickCount = 0;
-        var timer = null;
-        avatar.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            clickCount++;
-            if (timer) clearTimeout(timer);
-            timer = setTimeout(function() {
-                clickCount = 0;
-            }, 1200); // 1.2秒内连续点击
-            if (clickCount === 4) {
-                window.open(window.location.origin + ADMIN_PATH, '_blank');
-                clickCount = 0;
-            }
-        });
-    })();
-</script>
+    </style>
+    
+    <!-- Font Awesome 图标库 -->
+    <link rel="stylesheet" 
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" 
+          integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" 
+          crossorigin="anonymous" 
+          referrerpolicy="no-referrer">
+    
+    <!-- 功能实现脚本 -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const { avatar, profile, social } = CONFIG;
+      
+      // 初始化头像和座右铭
+      const avatarImg = document.getElementById('profile-avatar');
+      const mottoEl = document.getElementById('profile-motto');
+      
+      avatarImg.src = avatar.url;
+      mottoEl.textContent = profile.motto;
+      
+      // 设置社交媒体链接
+      document.getElementById('qq-link').href = social.qqGroup;
+      document.getElementById('github-link').href = `https://github.com/${social.github}`;
+      document.getElementById('weibo-link').href = social.weibo;
+      
+      // 头像快速点击进入管理后台
+      let clickCount = 0;
+      let clickTimer = null;
+      
+      avatarImg.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        clickCount++;
+        
+        if (clickTimer) {
+          clearTimeout(clickTimer);
+        }
+        
+        clickTimer = setTimeout(() => {
+          clickCount = 0;
+        }, avatar.clickTimeout);
+        
+        if (clickCount === avatar.clickThreshold) {
+          window.open(window.location.origin + avatar.adminPath, '_blank');
+          clickCount = 0;
+        }
+      });
+    });
+    </script>
