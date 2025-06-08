@@ -1,0 +1,79 @@
+<!-- AList 底部导航 -->
+<div id="customize" style="display: none; font-size: 15px; text-align: center;">
+    <div>
+        <!-- 底部导航链接 -->
+        <div style="font-weight: bold;">
+            <span class="nav-item">
+                <a class="nav-link" href="mailto:952903798@qq.com" target="_blank" rel="noopener noreferrer">
+                    <i class="fa-duotone fa-envelope-open" style="color:#409EFF" aria-hidden="true"></i>
+                    邮箱 |
+                </a>
+            </span>
+            <span class="nav-item">
+                <a class="nav-link" href="https://1.122915.xyz/" target="_blank" rel="noopener noreferrer">
+                    <i class="fas fa-edit" style="color:#409EFF" aria-hidden="true"></i>
+                    博客 |
+                </a>
+            </span>
+            <span class="nav-item">
+                <a class="nav-link" href="/@manage" target="_blank" rel="noopener noreferrer">
+                    <i class="fa-solid fa-folder-gear" style="color:#409EFF" aria-hidden="true"></i>
+                    管理
+                </a>
+            </span>
+        </div>
+        <br />
+
+        <!-- 一言展示 -->
+        <div style="line-height: 20px; font-weight: bold;">
+            <span>
+                "
+                <span style="color: rgb(13, 109, 252); font-weight: bold;" id="hitokoto">
+                    <a href="#" id="hitokoto_text">
+                        正在加载一言...
+                    </a>
+                </span> "
+            </span>
+        </div>
+    </div>
+</div>
+
+<script>
+// 使用 MutationObserver 监听 DOM 变化，替代 setInterval
+const observer = new MutationObserver((mutations, obs) => {
+    const footer = document.querySelector(".footer");
+    if (footer) {
+        document.querySelector("#customize").style.display = "";
+        obs.disconnect(); // 停止观察
+    }
+});
+
+// 开始观察 DOM 变化
+observer.observe(document.body, {
+    childList: true,
+    subtree: true
+});
+
+// 优化一言加载
+const loadHitokoto = async () => {
+    const hitokotoText = document.getElementById('hitokoto_text');
+    try {
+        const response = await fetch('https://v1.hitokoto.cn/');
+        const data = await response.json();
+        hitokotoText.textContent = data.hitokoto;
+    } catch (error) {
+        hitokotoText.textContent = '人生最大的遗憾,就是在最无能为力的时候遇到一个想要保护一生的人.';
+    }
+};
+
+// 点击刷新一言
+document.getElementById('hitokoto_text').addEventListener('click', async (e) => {
+    e.preventDefault();
+    const hitokotoText = e.target;
+    hitokotoText.textContent = '正在加载一言...';
+    await loadHitokoto();
+});
+
+// 页面加载完成后初始化一言
+document.addEventListener('DOMContentLoaded', loadHitokoto);
+</script>
