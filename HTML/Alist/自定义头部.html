@@ -1,76 +1,81 @@
-
 <!-- 引入字体，全局字体使用 -->
 <link rel="stylesheet" href="https://npm.elemecdn.com/lxgw-wenkai-webfont@1.1.0/lxgwwenkai-regular.css" />
 
 <style>
-/* 全局字体 */
+/* ===== 基础设置 ===== */
+/* 全局字体设置 */
 * {
-    font-family: 'LXGW WenKai', sans-serif; /* 使用引号包裹字体名称 */
-    font-weight: bold; /* 加粗字体 */
+    font-family: 'LXGW WenKai', sans-serif;
+    font-weight: bold;
+    letter-spacing: 2px;
 }
+
 body {
-    font-family: 'LXGW WenKai', sans-serif; /* 确保 body 元素使用相同字体 */
+    font-family: 'LXGW WenKai', sans-serif;
 }
 
-/* 定义浅色主题的自定义颜色变量 */
+/* ===== 主题变量 ===== */
+/* 浅色主题 */
 .hope-ui-light {
-    --my-color: rgba(255, 255, 255, 0.2); /* 半透明白色 */
-    --color-main-custom: #ffffff; /* 纯白色 */
+    --my-color: rgba(255, 255, 255, 0.2);
+    --color-main-custom: #ffffff;
 }
 
-/* 定义深色主题的自定义颜色变量 */
+/* 深色主题 */
 .hope-ui-dark {
-    --my-color: rgba(0, 0, 0, 0.7); /* 半透明黑色 */
-    --color-main-custom: #000000; /* 纯黑色 */
+    --my-color: rgba(0, 0, 0, 0.7);
+    --color-main-custom: #000000;
 }
 
-/* 设置背景样式 */
+/* ===== 背景设置 ===== */
 body {
     background-image: linear-gradient(to bottom, var(--my-color), var(--my-color)), url(https://t.alcy.cc/bd) !important;
-    background-repeat: no-repeat !important; /* 背景不重复 */
-    background-size: cover !important; /* 背景覆盖整个容器 */
-    background-attachment: fixed !important; /* 背景固定 */
-    background-position-x: center !important; /* 背景水平居中 */
+    background-repeat: no-repeat !important;
+    background-size: cover !important;
+    background-attachment: fixed !important;
+    background-position-x: center !important;
 }
 
-/* 定义特定类的背景颜色和模糊效果 */
+/* ===== 组件样式 ===== */
+/* 卡片背景 */
 .hope-c-PJLV-igScBhH-css,
 .hope-c-PJLV-ikSuVsl-css {
-    background-color: rgba(255, 255, 255, 0.2) !important; /* 设置透明度为20% */
-    backdrop-filter: blur(10px); /* 背景模糊效果 */
+    background-color: rgba(255, 255, 255, 0.2) !important;
+    backdrop-filter: blur(10px);
 }
 
-/* 定义特定类的背景为无 */
+/* 透明背景 */
 .hope-c-PJLV-idaeksS-css,
 .hope-c-PJLV-ikaMhsQ-css {
     background: none !important;
 }
 
-/* 隐藏footer */
-.footer {
+/* 隐藏元素 */
+.footer,
+kbd.hope-kbd.hope-c-iDYHca.hope-c-PJLV.hope-c-PJLV-ijhzIfm-css,
+.hope-menu__trigger.hope-c-bvjbhC.hope-c-PJLV.hope-c-PJLV-ieTGfmR-css {
     display: none !important;
 }
 
-/* 选中文本的样式 */
+/* ===== 文本选择样式 ===== */
 ::selection {
-    background: #fbc2eb; /* 选中文本背景色 */
-    color: #fff; /* 选中文本颜色 */
+    background: #fbc2eb;
+    color: #fff;
 }
 
-/* 全局字母间距设置 */
-* {
-    letter-spacing: 2px;
-}
-
-/* 深色主题下markdown链接的颜色 */
+/* ===== 深色主题链接 ===== */
 .hope-ui-dark .markdown-body a {
     color: #fff !important;
 }
 
-/* 版权信息样式 */
+/* ===== 版权信息样式 ===== */
+.copyright {
+    padding: 50px;
+}
+
 .copyright a,
 .copyright .by {
-    text-decoration: none; /* 去掉下划线 */
+    text-decoration: none;
 }
 
 .copyright .by {
@@ -85,7 +90,7 @@ body {
     justify-content: center;
     margin: 0 10px;
     position: relative;
-    transition: .5s; /* 过渡效果 */
+    transition: .5s;
 }
 
 .copyright .xhx {
@@ -95,7 +100,7 @@ body {
     width: 0;
     position: absolute;
     bottom: -3px;
-    transition: .5s; /* 过渡效果 */
+    transition: .5s;
 }
 
 .copyright a:hover {
@@ -124,11 +129,7 @@ body {
     border-radius: 8px 0 0 8px;
 }
 
-.copyright {
-    padding: 50px;
-}
-
-/* 运行时样式 */
+/* ===== 运行时和状态样式 ===== */
 .runtime {
     width: 100%;
     padding: 10px;
@@ -138,7 +139,6 @@ body {
     align-items: center;
 }
 
-/* 关于和状态部分的样式 */
 .about,
 .state {
     width: min(99%, 980px);
@@ -148,15 +148,5 @@ body {
 
 .state {
     margin-top: 20px;
-}
-
-/* 隐藏搜索栏文字 */
-kbd.hope-kbd.hope-c-iDYHca.hope-c-PJLV.hope-c-PJLV-ijhzIfm-css {
-    display: none;
-}
-
-/* 隐藏右上角列表切换按钮 */
-.hope-menu__trigger.hope-c-bvjbhC.hope-c-PJLV.hope-c-PJLV-ieTGfmR-css {
-    display: none;
 }
 </style>
