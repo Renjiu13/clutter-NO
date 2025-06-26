@@ -1,126 +1,136 @@
-# 随机生成一个密码
-# docker exec -it alist ./alist admin random
-# 手动设置一个密码,`NEW_PASSWORD`是指你需要设置的密码
-# docker exec -it alist ./alist admin set NEW_PASSWORD
-
-# 设置目录权限 
-# chmod -R 755 /mnt/usb
-
-# Docker Compose 文件版本
-version: "3.8"
-
+# 定义服务列表
 services:
-  # Alist 网盘服务
-  alist:
-    # 使用最新版 Alist 镜像
-    image: xhofe/alist:latest
-    # 容器名称
-    container_name: alist
-    # 端口映射：宿主机5244端口映射到容器5244端口
-    ports:
-      - 5233:5244
-    # 容器运行环境配置
-    environment:
-      # 用户ID和组ID设置，0表示root用户
-      - PUID=0
-      - PGID=0
-      # 文件权限掩码
-      - UMASK=022
-    # 总是重启
-    restart: always
-    # 挂载卷配置
-    volumes:
-      # Alist 数据目录
-      - /mnt/usb/alist/data:/opt/alist/data
-      # Aria2 临时文件目录
-      - /mnt/usb/aria2/temp/aria2:/opt/alist/data/temp/aria2
-      # 下载目录
-      - /mnt/usb/aria2/temp/downloads:/downloads
-      # 网盘根目录
-      - /mnt/usb:/nas
-    # 依赖 aria2-pro 服务，确保 aria2 先启动
+
+  # OpenList 服务配置
+  openlist:
+    # 使用毫秒镜像源的 latest 版本
+    image: docker.1ms.run/openlistteam/openlist:latest
+    # 容器名称设为 openlist
+    container_name: openlist
+    # 依赖 qbittorrentee 和 aria2 服务
     depends_on:
-      aria2-pro:
-        condition: "service_healthy"
-
-  # Aria2 下载服务
-  aria2-pro:
-    container_name: aria2-pro
-    # 使用 Aria2 Pro 镜像
-    image: p3terx/aria2-pro
-    # 运行环境配置
+        - qbittorrentee
+        - aria2
+    # 环境变量配置
     environment:
-      - PUID=0
-      - PGID=0
-      - UMASK_SET=022
-      # RPC 密钥，用于连接验证
-      - RPC_SECRET=123456
-      # RPC 端口
-      - RPC_PORT=6800
-      # 监听端口
-      - LISTEN_PORT=6888
-      # 磁盘缓存大小
-      - DISK_CACHE=64M
-      # IPv6 模式
-      - IPV6_MODE=false
-      # 自动更新 Tracker
-      - UPDATE_TRACKERS=true
-      # 时区
-      - TZ=Asia/Shanghai
-      # 特殊模式：下载完成后自动移动文件
-      - SPECIAL_MODE=move
-    # 数据卷挂载
+        # 用户 ID 设为 root
+        - PUID=0
+        # 用户组 ID 设为 root
+        - PGID=0
+        # 文件权限掩码设为 022
+        - UMASK=022
+        # 时区设为上海
+        - TZ=Asia/Shanghai
+    # 端口映射 5233:5244
+    ports:
+        - 5233:5244
+    # 数据卷配置
     volumes:
-      # Aria2 配置目录
-      - /mnt/usb/aria2/config:/config
-      # Aria2 临时文件目录
-      - /mnt/usb/aria2/temp/aria2:/opt/alist/data/temp/aria2
-      # 下载临时目录
-      - /mnt/usb/aria2/temp/downloads:/downloads
-      # 下载完成目录
-      - /mnt/usb/downloads:/completed
-    # 端口映射
-    ports:
-      # RPC 端口
-      - 6800:6800
-      # 下载监听端口（TCP）
-      - 6888:6888
-      # 下载监听端口（UDP）
-      - 6888:6888/udp
-    # 除非手动停止，否则始终重启
+        # 挂载本地 list/data 目录到容器数据目录
+        - ./list/data:/opt/openlist/data
+        # 共享 qBittorrent 临时目录
+        - ./data/temp/qBittorrent:/opt/openlist/data/temp/qBittorrent
+        # 共享 aria2 临时目录
+        - ./data/temp/aria2:/opt/openlist/data/temp/aria2
+    # 容器退出时自动重启（除非手动停止）
     restart: unless-stopped
-    # 日志配置
-    logging:
-      driver: json-file
-      options:
-        # 日志文件最大1M
-        max-size: 1m
-    # 健康检查
-    healthcheck:
-      # 通过 curl 检查 Aria2 RPC 服务是否正常
-      test: ["CMD-SHELL", "curl -s -f -X POST -H 'Content-Type: application/json' -d '{\"jsonrpc\":\"2.0\",\"id\":\"1\",\"method\":\"aria2.getVersion\",\"params\":[\"token:'$ARIA2_RPC_SECRET'\"]}' http://localhost:6800/jsonrpc || exit 1"]
-      # 检查间隔
-      interval: 30s
-      # 超时时间
-      timeout: 10s
-      # 重试次数
-      retries: 3
+    
+  # qBittorrentEE 服务配置
+  qbittorrentee:
+    # 使用毫秒镜像源的最新版
+    image: docker.1ms.run/superng6/qbittorrentee:latest
+    # 容器名称设为 qbittorrentee
+    container_name: qbittorrentee
+    # 环境变量配置
+    environment:
+      # 用户 ID 设为 root
+      - PUID=0
+      # 用户组 ID 设为 root
+      - PGID=0
+      # 时区设为上海
+      - TZ=Asia/Shanghai
+      # WebUI 端口设为 6699
+      - WEBUIPORT=6699
+      # 启用下载权限修复
+      - ENABLE_DOWNLOADS_PERM_FIX=true
+    # 数据卷配置
+    volumes:
+      # 挂载配置目录
+      - ./qbittorrentee/config:/config
+      # 挂载下载目录
+      - ./qbittorrentee/downloads:/downloads
+      # 共享临时目录给 OpenList
+      - ./data/temp/qBittorrent:/opt/openlist/data/temp/qBittorrent
+    # 端口映射配置
+    ports:
+      # TCP 端口 6881（BT 协议）
+      - 6881:6881
+      # UDP 端口 6881（DHT 网络）
+      - 6881:6881/udp
+      # WebUI 端口 6699
+      - 6699:6699
+    # 容器退出时自动重启（除非手动停止）
+    restart: unless-stopped
 
-  # AriaNg Web 管理界面
-  ariang:
-    container_name: ariang
-    # AriaNg 镜像
-    image: p3terx/ariang
-    # 启动命令，指定端口和 IPv6
-    command: --port 6880 --ipv6
+  # Aria2 离线下载服务配置
+  aria2:
+    # 使用毫秒镜像源的最新版
+    image: docker.1ms.run/p3terx/aria2-pro:latest
+    # 容器名称设为 aria2
+    container_name: aria2
+    # 环境变量配置
+    environment:
+      # 用户 ID 设为 root
+      - PUID=0
+      # 用户组 ID 设为 root
+      - PGID=0
+      # 时区设为上海
+      - TZ=Asia/Shanghai
+      # RPC 密钥 (请更改为自己的密钥)
+      - RPC_SECRET=123456789Li
+      # 启用磁盘缓存
+      - DISK_CACHE=128M
+      # 最大同时下载数
+      - MAX_CONCURRENT_DOWNLOADS=5
     # 端口映射
     ports:
-      - 6880:6880
-    # 除非手动停止，否则始终重启
+      # Aria2 RPC 端口
+      - 6800:6800
+      # Aria2 下载端口
+      - 6888:6888
+      # Aria2 下载端口 UDP
+      - 6888:6888/udp
+    # 数据卷配置
+    volumes:
+      # 配置目录
+      - ./aria2/config:/config
+      # 下载目录
+      - ./aria2/downloads:/downloads
+      # 共享临时目录
+      - ./data/temp/aria2:/opt/openlist/data/temp/aria2
+    # 容器退出时自动重启（除非手动停止）
     restart: unless-stopped
-    # 日志配置
-    logging:
-      driver: json-file
-      options:
-        # 日志文件最大1M
-        max-size: 1m
+
+  # Aria2 WebUI (AriaNg) 服务配置
+  ariang:
+    # 使用毫秒镜像源的最新版
+    image: docker.1ms.run/p3terx/ariang:latest
+    # 容器名称设为 ariang
+    container_name: ariang
+    # 环境变量配置
+    environment:
+      # 用户 ID 设为 root
+      - PUID=0
+      # 用户组 ID 设为 root
+      - PGID=0
+      # 时区设为上海
+      - TZ=Asia/Shanghai
+    # 端口映射
+    ports:
+      # WebUI 访问端口
+      - 6880:6880
+    # 依赖 aria2 服务
+    depends_on:
+      - aria2
+    # 容器退出时自动重启（除非手动停止）
+    restart: unless-stopped
