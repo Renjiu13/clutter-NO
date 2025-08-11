@@ -7,129 +7,119 @@ services:
     image: docker.1ms.run/openlistteam/openlist:latest
     # 容器名称设为 openlist
     container_name: openlist
-    # 依赖 qbittorrentee 和 aria2 服务
     depends_on:
-        - qbittorrentee
-        - aria2
-    # 环境变量配置
+      - qbittorrentee
+      - aria2
     environment:
-        # 用户 ID 设为 root
-        - PUID=0
-        # 用户组 ID 设为 root
-        - PGID=0
-        # 文件权限掩码设为 022
-        - UMASK=022
-        # 时区设为上海
-        - TZ=Asia/Shanghai
-    # 端口映射 5233:5244
+      # 运行容器的用户 ID（此处为 root）
+      - PUID=0
+      # 运行容器的组 ID（此处为 root）
+      - PGID=0
+      # 文件权限掩码（默认 022）
+      - UMASK=022
+      # 时区设为上海
+      - TZ=Asia/Shanghai
     ports:
-        - 5233:5244
-    # 数据卷配置
+      # 本机5233端口映射到容器5244端口（外部访问端口）
+      - "5233:5244"
     volumes:
-        # 挂载本地 list/data 目录到容器数据目录
-        - ./list/data:/opt/openlist/data
-        # 共享 qBittorrent 临时目录
-        - ./data/temp/qBittorrent:/opt/openlist/data/temp/qBittorrent
-        # 共享 aria2 临时目录
-        - ./data/temp/aria2:/opt/openlist/data/temp/aria2
+      # 挂载主数据目录到容器（原有数据目录）
+      - ./list/data:/opt/openlist/data
+      # 【新增】挂载本地硬盘信息（配置目录下）到容器内，用于存储/读取本机磁盘信息
+      - ./list/config/disks:/opt/openlist/data/local_disks
+      # 共享 qBittorrent 临时目录
+      - ./data/temp/qBittorrent:/opt/openlist/data/temp/qBittorrent
+      # 共享 aria2 临时目录
+      - ./data/temp/aria2:/opt/openlist/data/temp/aria2
     # 容器退出时自动重启（除非手动停止）
     restart: unless-stopped
-    
+
   # qBittorrentEE 服务配置
   qbittorrentee:
-    # 使用毫秒镜像源的最新版
+    # 使用毫秒镜像源的最新版 qBittorrentEE
     image: docker.1ms.run/superng6/qbittorrentee:latest
     # 容器名称设为 qbittorrentee
     container_name: qbittorrentee
-    # 环境变量配置
     environment:
-      # 用户 ID 设为 root
+      # 运行容器的用户 ID（此处为 root）
       - PUID=0
-      # 用户组 ID 设为 root
+      # 运行容器的组 ID（此处为 root）
       - PGID=0
       # 时区设为上海
       - TZ=Asia/Shanghai
-      # WebUI 端口设为 6699
+      # qBittorrent WebUI 端口（容器内）
       - WEBUIPORT=6699
-      # 启用下载权限修复
+      # 启用下载权限修复（建议开启）
       - ENABLE_DOWNLOADS_PERM_FIX=true
-    # 数据卷配置
     volumes:
-      # 挂载配置目录
+      # qBittorrent 配置目录（持久化）
       - ./qbittorrentee/config:/config
-      # 挂载下载目录
+      # qBittorrent 下载目录（持久化）
       - ./qbittorrentee/downloads:/downloads
       # 共享临时目录给 OpenList
       - ./data/temp/qBittorrent:/opt/openlist/data/temp/qBittorrent
-    # 端口映射配置
     ports:
-      # TCP 端口 6881（BT 协议）
-      - 6881:6881
-      # UDP 端口 6881（DHT 网络）
-      - 6881:6881/udp
-      # WebUI 端口 6699
-      - 6699:6699
+      # TCP 端口 6881（BT 传输）
+      - "6881:6881"
+      # UDP 端口 6881（DHT）
+      - "6881:6881/udp"
+      # WebUI 端口映射（本机6699 -> 容器6699）
+      - "6699:6699"
     # 容器退出时自动重启（除非手动停止）
     restart: unless-stopped
 
   # Aria2 离线下载服务配置
   aria2:
-    # 使用毫秒镜像源的最新版
+    # 使用毫秒镜像源的最新版 aria2-pro
     image: docker.1ms.run/p3terx/aria2-pro:latest
     # 容器名称设为 aria2
     container_name: aria2
-    # 环境变量配置
     environment:
-      # 用户 ID 设为 root
+      # 运行容器的用户 ID（此处为 root）
       - PUID=0
-      # 用户组 ID 设为 root
+      # 运行容器的组 ID（此处为 root）
       - PGID=0
       # 时区设为上海
       - TZ=Asia/Shanghai
-      # RPC 密钥 (请更改为自己的密钥)
+      # Aria2 RPC 验证密钥（请替换为强密码）
       - RPC_SECRET=123456789Li
-      # 启用磁盘缓存
+      # 启用磁盘缓存大小（示例128M）
       - DISK_CACHE=128M
-      # 最大同时下载数
+      # 最大同时下载任务数
       - MAX_CONCURRENT_DOWNLOADS=5
-    # 端口映射
     ports:
-      # Aria2 RPC 端口
-      - 6800:6800
-      # Aria2 下载端口
-      - 6888:6888
-      # Aria2 下载端口 UDP
-      - 6888:6888/udp
-    # 数据卷配置
+      # Aria2 RPC 端口（本机6800 -> 容器6800）
+      - "6800:6800"
+      # Aria2 下载端口（TCP）
+      - "6888:6888"
+      # Aria2 下载端口（UDP）
+      - "6888:6888/udp"
     volumes:
-      # 配置目录
+      # Aria2 配置目录（持久化）
       - ./aria2/config:/config
-      # 下载目录
+      # Aria2 下载目录（持久化）
       - ./aria2/downloads:/downloads
-      # 共享临时目录
+      # 共享临时目录给 OpenList
       - ./data/temp/aria2:/opt/openlist/data/temp/aria2
     # 容器退出时自动重启（除非手动停止）
     restart: unless-stopped
 
   # Aria2 WebUI (AriaNg) 服务配置
   ariang:
-    # 使用毫秒镜像源的最新版
+    # 使用毫秒镜像源的最新版 AriaNg
     image: docker.1ms.run/p3terx/ariang:latest
     # 容器名称设为 ariang
     container_name: ariang
-    # 环境变量配置
     environment:
-      # 用户 ID 设为 root
+      # 运行容器的用户 ID（此处为 root）
       - PUID=0
-      # 用户组 ID 设为 root
+      # 运行容器的组 ID（此处为 root）
       - PGID=0
       # 时区设为上海
       - TZ=Asia/Shanghai
-    # 端口映射
     ports:
-      # WebUI 访问端口
-      - 6880:6880
-    # 依赖 aria2 服务
+      # WebUI 访问端口（本机6880 -> 容器6880）
+      - "6880:6880"
     depends_on:
       - aria2
     # 容器退出时自动重启（除非手动停止）
